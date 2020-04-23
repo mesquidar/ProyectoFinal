@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProyectoFinal.CORE.ThreatCrowd
 {
-    class TCResolution
+    public class TCResolution
     {
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
 {
-    public class PeImport
+    public class PeExport
     {
         /// <summary>
         /// Id de peexport
@@ -29,6 +29,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de exports
         /// </summary>
-        public List<Imports> Imports { get; set; }
+        public List<Exports> Exports { get; set; }
     }
 }
