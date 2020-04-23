@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>ProyectoFinal.DAL</AssemblyName>
+    <RootNamespace>ProyectoFinal.DAL</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

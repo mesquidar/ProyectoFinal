@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ProyectoFinal.Web.Data.Migrations
+namespace ProyectoFinal.DAL
 {
     public partial class CreateIdentitySchema : Migration
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProyectoFinal.CORE;
 
-namespace ProyectoFinal.Web.Data
+namespace ProyectoFinal.DAL
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
