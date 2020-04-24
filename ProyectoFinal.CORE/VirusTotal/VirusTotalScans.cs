@@ -19,7 +19,12 @@ namespace ProyectoFinal.CORE.VirusTotal
         /// <summary>
         /// analisis de virustotal
         /// </summary>
-        public virtual VirusTotal VirusTotal { get; set; }
+        public virtual VirusTotalInfo VirusTotal { get; set; }
+
+        /// <summary>
+        /// Nombre del antivirus
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// Dteccion del malware si es positivo o no

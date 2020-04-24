@@ -44,7 +44,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// lista de pids
         /// </summary>
-        public List<int> Pids { get; set; }
+        public List<TargetPids> Pids { get; set; }
 
         /// <summary>
         /// ruta del archivo dentro de windows
@@ -69,7 +69,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// lista de urls asociada al archivo
         /// </summary>
-        public List<string> Urls { get; set; }
+        public List<TargetUrls> Urls { get; set; }
 
         /// <summary>
         /// Yaraname encontrado en el archivo

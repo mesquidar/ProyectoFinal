@@ -19,7 +19,7 @@ namespace ProyectoFinal.CORE.VirusTotal
         /// <summary>
         /// analisis de virustotal
         /// </summary>
-        public virtual VirusTotal VirusTotal { get; set; }
+        public virtual VirusTotalInfo VirusTotal { get; set; }
 
         /// <summary>
         /// fecha del comentario

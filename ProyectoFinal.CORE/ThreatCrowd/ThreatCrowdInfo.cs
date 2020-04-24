@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProyectoFinal.CORE.ThreatCrowd
 {
-    public class ThreatCrowd
+    public class ThreatCrowdInfo
     {
         /// <summary>
         /// Id de la busqueda de ThreatCrowd
@@ -34,37 +34,37 @@ namespace ProyectoFinal.CORE.ThreatCrowd
         /// <summary>
         /// Lista de hashes
         /// </summary>
-        public List<string> Hashes { get; set; }
+        public List<TCHashes> Hashes { get; set; }
 
         /// <summary>
         /// Lista de emails
         /// </summary>
-        public List<string> Emails { get; set; }
+        public List<TCEmails> Emails { get; set; }
 
         /// <summary>
         /// Lista de dominios
         /// </summary>
-        public List<string> Domains { get; set; }
+        public List<TCDomains> Domains { get; set; }
 
         /// <summary>
         /// Lista de subdominios
         /// </summary>
-        public List<string> Subdomains { get; set; }
+        public List<TCSubdomanins> Subdomains { get; set; }
 
         /// <summary>
         /// Lista de referencias
         /// </summary>
-        public List<string> References { get; set; }
+        public List<TCReferences> References { get; set; }
 
         /// <summary>
         /// Lista de scans
         /// </summary>
-        public List<string> Scans { get; set; }
+        public List<TCScans> Scans { get; set; }
 
         /// <summary>
         /// Lista de ips
         /// </summary>
-        public List<string> Ips { get; set; }
+        public List<TCIps> Ips { get; set; }
 
         /// <summary>
         /// Votos en ThreatCrowd

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProyectoFinal.CORE.VirusTotal
 {
-    public class VirusTotal
+    public class VirusTotalInfo
     {
         /// <summary>
         /// Id del analisis de virustotal
@@ -24,22 +24,12 @@ namespace ProyectoFinal.CORE.VirusTotal
         /// <summary>
         /// Escaneo de los distintos antivurs de virustotal
         /// </summary>
-        public Dictionary<string, VirusTotalScans> Scans{ get; set; }
-
-        /// <summary>
-        /// Escano de virustotal
-        /// </summary>
-        public virtual VirusTotalScans Scan { get; set; }
+        public List<VirusTotalScans> Scans{ get; set; }
 
         /// <summary>
         /// Lista de los comentario de virus total
         /// </summary>
         public List<VirusTotalComments> Comments { get; set; }
-
-        /// <summary>
-        /// Comentarios de virustotal
-        /// </summary>
-        public virtual VirusTotalComments VirusTotalComments { get; set; }
 
         /// <summary>
         /// Total de analisis realizados

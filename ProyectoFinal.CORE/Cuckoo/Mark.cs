@@ -24,7 +24,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// Call de mark
         /// </summary>
-        public MarkCall Call { get; set; }
+        public List<MarkCall> Call { get; set; }
 
         /// <summary>
         /// cid de mark
@@ -59,6 +59,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// section de mark
         /// </summary>
-        public MarkSection Section { get; set; }
+        public List<MarkSection> MarkSection { get; set; }
     }
 }

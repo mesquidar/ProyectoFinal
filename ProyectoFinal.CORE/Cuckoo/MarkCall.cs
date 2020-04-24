@@ -29,7 +29,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// argumentos de mark
         /// </summary>
-        public MarkArguments Arguments { get; set; }
+        public List<MarkArguments> Arguments { get; set; }
 
         /// <summary>
         /// categoria de markcall

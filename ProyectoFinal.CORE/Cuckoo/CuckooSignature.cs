@@ -39,7 +39,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de referencias
         /// </summary>
-        public List<string> References { get; set; }
+        public List<SignatureReferences> References { get; set; }
 
         /// <summary>
         /// nivel de severidad

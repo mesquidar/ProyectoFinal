@@ -27,8 +27,8 @@ namespace ProyectoFinal.CORE.Cuckoo
         public List<ProcessTree> Processtree { get; set; }
 
         /// <summary>
-        /// diccionario de otra informacion relacionada
+        /// listado de otra informacion relacionada
         /// </summary>
-        public Dictionary<string, List<string>> Summary { get; set; }
+        public List<BehaviorSummary> Summary { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// lista de pids del archivo
         /// </summary>
-        public List<int> Pids { get; set; }
+        public List<DroppedPids> Pids { get; set; }
 
         /// <summary>
         /// tamaño del archivo
@@ -59,7 +59,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// lista de urls en caso de que haya
         /// </summary>
-        public List<string> Urls { get; set; }
+        public List<DroppedUrls> Urls { get; set; }
 
         /// <summary>
         /// lista de yaradropped

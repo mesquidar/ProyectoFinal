@@ -29,7 +29,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de claves
         /// </summary>
-        public List<string> Keys { get; set; }
+        public List<StaticKeys> Keys { get; set; }
 
         /// <summary>
         /// listado de peexport
