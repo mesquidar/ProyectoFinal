@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProyectoFinal.Web</title>
+    <title>@ViewData["Title"] - ProyectoFinal</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/style.css" />
     <link rel="stylesheet" href="~/css/mdb.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
     <header>
@@ -24,10 +25,22 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Scan" asp-action="Index">Analizar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Muestras</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Buscar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Contacto</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">FAQ</a>
                         </li>
                     </ul>
                 </div>
@@ -45,6 +58,7 @@
             </div>
         </nav>
     </header>
+    <br /><br /><br /><br />
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -81,7 +95,7 @@
 
                     <ul class="list-unstyled">
                         <li>
-                            <a href="#!">Link 1</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
                         </li>
                         <li>
                             <a href="#!">Link 2</a>
@@ -126,7 +140,7 @@
             <div class="row">
 
                 <!-- Grid column -->
-                <div class="col-md-12 py-5 elegant-color-dark" >
+                <div class="col-md-12 py-5 elegant-color-dark">
                     <div class="mb-5 flex-center">
 
                         <!-- Facebook -->
@@ -173,7 +187,7 @@
     </footer>
     <!-- Footer -->
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/popper.min.js"></script>

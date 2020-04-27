@@ -30,10 +30,22 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Scan" asp-action="Index">Analizar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Muestras</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Buscar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Contacto</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">FAQ</a>
                         </li>
                     </ul>
                 </div>
@@ -81,7 +93,7 @@
                     <strong>Ven y prueba nuestro servicio de forma gratuita</strong>
                 </h4>
 
-                <a target="_blank" href="https://mdbootstrap.com/education/bootstrap/" class="btn btn-outline-white btn-lg">
+                <a target="_blank" href="/Scan" class="btn btn-outline-white btn-lg">
                     Empieza a analizar tus archivos! 
                     <i class="fas fa-arrow-alt-circle-right ml-2"></i>
                 </a>
@@ -123,7 +135,7 @@
 
                     <ul class="list-unstyled">
                         <li>
-                            <a href="#!">Link 1</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
                         </li>
                         <li>
                             <a href="#!">Link 2</a>
