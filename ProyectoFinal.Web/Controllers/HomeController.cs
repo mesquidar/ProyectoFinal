@@ -33,5 +33,20 @@ namespace ProyectoFinal.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        public IActionResult Faq()
+        {
+            return View();
+        }
+
+        public IActionResult Legal()
+        {
+            return View();
+        }
     }
 }

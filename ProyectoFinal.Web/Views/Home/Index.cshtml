@@ -39,13 +39,10 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Muestras</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Buscar</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Search" asp-action="Index">Buscar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Contacto</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">FAQ</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a>
                         </li>
                     </ul>
                 </div>
@@ -119,8 +116,24 @@
                 <div class="col-md-6 mt-md-0 mt-3">
 
                     <!-- Content -->
-                    <h5 class="text-uppercase">Footer Content</h5>
-                    <p>Here you can use rows and columns to organize your footer content.</p>
+                    <img src="~/img/logo2.png" class="navbar-brand" height="60" width="50">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ProyectoFinal</a>
+                    <p>
+                        ProyectoFinal S.L <br />
+                        Av.Constitución, 3 07760, Ciutadella de Menorca<br />
+                        Llámanos 971 00 00 00<br />
+                        Email: contacto@proyectofinal.com<br />
+
+                        Horario:<br />
+
+                        Lunes - Viernes<br />
+
+                        Mañana: 09:00 - 18:00<br /><br />
+
+                        Sabado - Domingo<br />
+
+                        Cerrado
+                    </p>
 
                 </div>
                 <!-- Grid column -->
@@ -131,20 +144,17 @@
                 <div class="col-md-3 mb-md-0 mb-3">
 
                     <!-- Links -->
-                    <h5 class="text-uppercase">Links</h5>
+                    <h5 class="text-uppercase">Información</h5>
 
                     <ul class="list-unstyled">
+                        <li>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Legal">Aviso legal</a>
+                        </li>
                         <li>
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
                         </li>
                         <li>
-                            <a href="#!">Link 2</a>
-                        </li>
-                        <li>
-                            <a href="#!">Link 3</a>
-                        </li>
-                        <li>
-                            <a href="#!">Link 4</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a>
                         </li>
                     </ul>
 
@@ -154,20 +164,17 @@
                 <div class="col-md-3 mb-md-0 mb-3">
 
                     <!-- Links -->
-                    <h5 class="text-uppercase">Links</h5>
+                    <h5 class="text-uppercase">Servicios</h5>
 
                     <ul class="list-unstyled">
                         <li>
-                            <a href="#!">Link 1</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Scan" asp-action="Index">Análisis Malware</a>
                         </li>
                         <li>
-                            <a href="#!">Link 2</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Search" asp-action="Index">Buscar</a>
                         </li>
                         <li>
-                            <a href="#!">Link 3</a>
-                        </li>
-                        <li>
-                            <a href="#!">Link 4</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Last">últimas muestras</a>
                         </li>
                     </ul>
 
