@@ -34,8 +34,10 @@ namespace ProyectoFinal.IFR.IoC
 
             // TODO: Register your types here
             container.RegisterType<ProyectoFinal.IFR.Log.ILogEvent, ProyectoFinal.IFR.Log.Log4NetManager>();
-            //container.RegisterType<ProyectoFinal.IFR.Email.IEmailEvent, ProyectoFinal.IFR.Email.EmailManager>();
+            container.RegisterType<ProyectoFinal.IFR.Email.IEmailService, ProyectoFinal.IFR.Email.EmailService>();
             container.RegisterType(Type.GetType("ProyectoFinal.CORE.Contracts.IApplicationDbContext, ProyectoFinal.CORE"), Type.GetType("ProyectoFinal.DAL.ApplicationDbContext, ProyectoFinal.DAL"));
+            container.RegisterType(Type.GetType("ProyectoFinal.CORE.Contracts.IMalwareManager, ProyectoFinal.CORE"), Type.GetType("ProyectoFinal.Application.MalwareManager, ProypectoFinal.Application"));
+
 
         }
     }
