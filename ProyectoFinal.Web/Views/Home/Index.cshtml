@@ -44,6 +44,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a>
                         </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+
+                            <li>
+                                <a class="nav-link text-light" href="~/Admin/">Admin</a>
+                            </li>
+                        }
                     </ul>
                 </div>
                 <ul class="navbar-nav nav-flex-icons">

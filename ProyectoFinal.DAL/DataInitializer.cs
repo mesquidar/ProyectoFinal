@@ -19,10 +19,10 @@ namespace ProyectoFinal.DAL
             if (userManager.FindByEmailAsync("admin@proyectofinal.com").Result == null)
             {
                 ApplicationUser user = new ApplicationUser();
-                user.UserName = "admin";
+                user.UserName = "admin@proyectofinal.com";
                 user.Email = "admin@proyectofinal.com";
 
-                IdentityResult result = userManager.CreateAsync(user, "1A2B3C4d").Result;
+                IdentityResult result = userManager.CreateAsync(user, "1A2B3C4d.").Result;
 
                 if (result.Succeeded)
                 {

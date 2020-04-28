@@ -26,6 +26,9 @@ namespace ProyectoFinal.Web
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+            
+            //services.AddDbContextPool<ApplicationDbContext>(options => 
+                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             //services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 //.AddEntityFrameworkStores<ApplicationDbContext>()
 
@@ -68,6 +71,11 @@ namespace ProyectoFinal.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllerRoute(
+                 name: "areas",
+                 pattern: "{area}/{controller}/{did?}/{action=Index}/{id?}");
+
                 endpoints.MapRazorPages();
             });
         }

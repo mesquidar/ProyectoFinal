@@ -1,0 +1,67 @@
+@using ProyectoFinal.Web.Areas.Admin.Models
+@model IEnumerable<UserList>
+
+@{
+    ViewBag.Title = "Usuarios";
+}
+
+<h2>Usuarios</h2>
+@{
+    if (TempData["borrado"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @Html.Encode(TempData["borrado"])
+        </div>
+    }
+
+    if (TempData["creado"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @Html.Encode(TempData["creado"])
+        </div>
+    }
+
+    if (TempData["editado"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @Html.Encode(TempData["editado"])
+        </div>
+    }
+}
+<table id="impuestos" class="table table-bordered table-hover table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id = item.Id }, new { @class = "btn btn-warning" }) |
+                @Html.ActionLink("Eliminar", "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    }
+</table>
+<script>
+    $(document).ready(function () {
+        $('#impuestos').DataTable();
+    });
+</script>
