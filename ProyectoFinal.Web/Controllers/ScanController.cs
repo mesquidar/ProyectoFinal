@@ -10,10 +10,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinal.CORE;
 using ProyectoFinal.CORE.Contracts;
+using ProyectoFinal.CORE.VirusTotal;
 using ProyectoFinal.IFR.Log;
 using ProyectoFinal.Web.Models;
+using VirusTotalNet;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading;
+using VirusTotalNet.Results;
+using VirusTotalNet.ResponseCodes;
+using VirusTotalNet.Objects;
+using ProyectoFinal.CORE.Contracts.VirusTotal;
 
 namespace ProyectoFinal.Web.Controllers
 {
@@ -22,18 +28,26 @@ namespace ProyectoFinal.Web.Controllers
     {
         private readonly IHostingEnvironment _appEnvironment;
         IMalwareManager malwareManager = null;
+        IVirusTotalManager vtManager = null;
+        IVirusTotalScanManager vtScanManager = null;
+        IVirusTotalCommentManager vtCommentManager = null;
         ILogEvent _log = null;
         public static string status;
-        
+        public static int progress;
+
 
         /// <summary>
         /// Contructor del controlador de productos
         /// </summary>
         /// <param name="malwareManager">manager de malware</param>
         /// <param name="log">log</param>
-        public ScanController(IMalwareManager malwareManager, ILogEvent log, IHostingEnvironment hostingEnvironment)
+        public ScanController(IMalwareManager malwareManager, IVirusTotalManager vtManager,IVirusTotalScanManager vtScanManager,
+            IVirusTotalCommentManager vtCommentManager, ILogEvent log, IHostingEnvironment hostingEnvironment)
         {
             this.malwareManager = malwareManager;
+            this.vtManager = vtManager;
+            this.vtScanManager = vtScanManager;
+            this.vtCommentManager = vtCommentManager;
             _log = log;
             _appEnvironment = hostingEnvironment;
         }
@@ -93,7 +107,7 @@ namespace ProyectoFinal.Web.Controllers
                         string resultMd5 = malwareManager.checkMD5(Path.Combine(uploads, file.FileName));
                         var result = malwareManager.GetByMd5(resultMd5);
                         //si no esta subida se realizara el analisis
-                        if (result.Any() == false)
+                        if (result == null)
                         {
 
                             //creamos el nuevo malware
@@ -105,12 +119,12 @@ namespace ProyectoFinal.Web.Controllers
                                 Date = DateTime.Now,
                                 MD5 = malwareManager.checkMD5("wwwroot/Uploads/Malware/" + file.FileName),
                                 SHA256 = malwareManager.checkSHA("wwwroot/Uploads/Malware/" + file.FileName),
-                                FilePath = uploads + file.FileName,
+                                FilePath = Path.Combine(uploads, file.FileName),
                                 MalwareStatus = CORE.Status.En_Cola,
                             };
 
                             //añadiumo y guardamos
-                            malwareManager.Add(malware);
+                            malwareManager.AddAsync(malware);
                             malwareManager.Context.SaveChanges();
                             TempData["creado"] = "Su muestra se ha subido correctamente";
 
@@ -145,6 +159,8 @@ namespace ProyectoFinal.Web.Controllers
             {
                 
                 return View(malware);
+
+                
             }
             else
             {
@@ -164,31 +180,147 @@ namespace ProyectoFinal.Web.Controllers
         
 
         /// <summary>
-        /// Metodo de añade producto al carrito
+        /// Metodo que se ejecuta al cargar la pagina de analyze y empieza el analisis del archivo
         /// </summary>
-        /// <param name="md5">id del producto</param>
+        /// <param name="md5">md5 del producto</param>
         /// <returns></returns>
-        public void StartAnalysis(string md5)
+        public ActionResult StartAnalysisFile(int id)
         {
             try
             {
-                var result = malwareManager.GetByMd5(md5);
-                status = "Verificando archivo en VirusTotal";
-                return;
+           
+                StartVirusTotalFileAsync(id);
+                progress = 2;
+
+                return null;
             }
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
                 _log.WriteError(ex.Message, ex);
-                Redirect("Index");
+                return Redirect("Index");
             }
             
         }
+        /// <summary>
+        /// Metodo que ejecuta el analisis de los archivos en virustotal de forma asincrona
+        /// </summary>
+        /// <param name="malware"></param>
+        /// <returns></returns>
+        public async void StartVirusTotalFileAsync(int id)
+        {
+            VirusTotal virusTotal = new VirusTotal("8dfa583388406b434fd2c2fb3882f20283bbc8f2c3fb9ef73be09ca4b3f8d2ab");
 
+            var malware = malwareManager.GetById(id);
+
+            progress = 5;
+            //Usamos HTTPS en vez de HTTP normal
+            virusTotal.UseTLS = true;
+
+            status = "Leyendo archivo...";
+            //Pasamos el archivo a bytes dentro de una array de bytes
+            byte[] file = System.IO.File.ReadAllBytes(malware.FilePath);
+
+           
+
+            status = "Verificando archivo en VirusTotal...";
+            progress = 10;
+
+            //Verificamos si el archivo ya se ha analizado antes
+            FileReport fileReport = await virusTotal.GetFileReportAsync(file);
+            
+
+            bool hasFileBeenScannedBefore = fileReport.ResponseCode == FileReportResponseCode.Present;
+
+            //Si los resultados han sido escaneado antes se guardan en la base de datos
+            if (hasFileBeenScannedBefore)
+            {
+                //ontenemos la informacion de los resultados y las guardamos en la tabla de VTInfo
+                status = "Archivo encontrado en VirusTotal. Obteniendo Información...";
+                progress = 12;
+
+
+                CORE.VirusTotal.VirusTotalInfo info = new CORE.VirusTotal.VirusTotalInfo
+                {
+                    Malware_Id = malware.Id,
+                    Total = fileReport.Total,
+                    Positives = fileReport.Positives,
+                };
+
+                status = "Guardando Resultados...";
+                progress = 15;
+
+                await vtManager.AddAsync(info);
+                await vtManager.Context.SaveChangesAsync();
+
+                //convertimos el diccionario en lista y de cada escaneo lo guardamos en la tabls
+
+                foreach (var key in fileReport.Scans.ToList())
+                {
+                    CORE.VirusTotal.VirusTotalScans scans = new CORE.VirusTotal.VirusTotalScans
+                    {
+                        VirusTotal_Id = info.Id,
+                        Name = key.Key,
+                        Version = key.Value.Version,
+                        Detected = key.Value.Detected,
+                        Result = key.Value.Version
+
+                    };
+
+                    vtScanManager.Add(scans);
+                }
+                progress = 20;
+                vtScanManager.Context.SaveChanges();
+
+                //obtenemos los comentarios desde VirusTotal del analisis 
+                status = "Obteniendo Comentarios...";
+                progress = 25;
+                CommentResult comments = await virusTotal.GetCommentAsync(file);
+
+                // de cada comentario los guardamos en la tabla
+                foreach (var com in comments.Comments)
+                {
+                    CORE.VirusTotal.VirusTotalComments mCom = new CORE.VirusTotal.VirusTotalComments
+                    {
+                        VirusTotal_Id = info.Id,
+                        Date = com.Date,
+                        Comment = com.Comment
+                        
+                    };
+
+                    vtCommentManager.Add(mCom);
+                }
+                status = "Guardando Comentarios...";
+                progress = 30;
+
+                vtCommentManager.Context.SaveChanges();
+
+            }
+            else
+            {
+                ScanResult fileResult = await virusTotal.ScanFileAsync(file, malware.FileName);
+                
+            }
+        }
+
+        /// <summary>
+        /// Metodo que obtiene el estado del analisis del archivo o url
+        /// </summary>
+        /// <returns>devuelve el estado del analisis</returns>
         [HttpGet]
         public JsonResult GetStatus()
         {
             return Json(status);
+        }
+
+        /// <summary>
+        /// Metodo que obtiene el progrso del analisis del archivo o url
+        /// </summary>
+        /// <returns>devuelve el progreso del analisis</returns>
+        [HttpGet]
+        public JsonResult GetProgress()
+        {
+            return Json(progress);
         }
 
     }

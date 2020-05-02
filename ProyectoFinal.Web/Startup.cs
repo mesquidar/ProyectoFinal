@@ -12,7 +12,8 @@ using ProyectoFinal.CORE.Contracts;
 using ProyectoFinal.Application;
 using ProyectoFinal.IFR.Log;
 using Microsoft.AspNetCore.Http.Features;
-
+using ProyectoFinal.CORE.Contracts.VirusTotal;
+using ProyectoFinal.Application.VirusTotal;
 
 namespace ProyectoFinal.Web
 {
@@ -52,11 +53,15 @@ namespace ProyectoFinal.Web
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            //inyeccion de dependencias de controladores etc.
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
             services.AddScoped<ILogEvent, Log4NetManager>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IMalwareManager, MalwareManager>();
+            services.AddScoped<IVirusTotalManager, VirusTotalManager>();
+            services.AddScoped<IVirusTotalScanManager, VirusTotalScanManager>();
+            services.AddScoped<IVirusTotalCommentManager, VirusTotalCommentManager>();
 
         }
 

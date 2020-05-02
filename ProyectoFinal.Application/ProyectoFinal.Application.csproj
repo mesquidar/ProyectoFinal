@@ -15,4 +15,7 @@
     <ProjectReference Include="..\ProyectoFinal.DAL\ProyectoFinal.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="VirusTotal\" />
+  </ItemGroup>
 </Project>

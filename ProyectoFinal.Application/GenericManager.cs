@@ -40,6 +40,17 @@ namespace ProyectoFinal.Application
         }
 
         /// <summary>
+        /// Añade una entidad al contexto de datos
+        /// </summary>
+        /// <param name="entity">Entidad a añadir</param>
+        /// <returns>Entidad añadida</returns>
+        public async Task<T> AddAsync(T entity)
+        {
+            await Context.Set<T>().AddAsync(entity);
+            return entity;
+        }
+
+        /// <summary>
         /// Elimina una entidad del contexto de datos
         /// </summary>
         /// <param name="entity">Entidad a eliminar</param>
