@@ -2,9 +2,14 @@
 @{
     ViewData["Title"] = "Subir Muestra";
 }
-    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js">
-        $('.file-upload').file_upload();
-    </script>
+<script type="text/javascript" src="~/lib/jquery/dist/jquery.js">$('.file-upload').file_upload();</script>
+
+@if (TempData["analyze"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @Html.Encode(TempData["analyze"])
+    </div>
+}
 
 <div align="center">
     <div class="col-md-10">
@@ -34,13 +39,22 @@
                             <hr />
                             <div class="form-group">
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="customFileLang" lang="es">
+                                    <input id="upload" type="file" name="upload" class="custom-file-input" lang="es">
                                     <label class="custom-file-label" for="customFileLang">Seleccionar Archivo</label>
                                 </div>
                                 <label>Tamaño máximo de 120mb</label>
                             </div>
-                        
+
+
+                            @if (TempData["grande"] != null)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    @Html.Encode(TempData["grande"])
+                                </div>
+                            }
+
                             <button type="submit" class="btn btn-primary">Analizar</button>
+
                         }
                     </div>
                     <div class="tab-pane fade" id="url" role="tabpanel" aria-labelledby="url-tab">
@@ -71,6 +85,4 @@
     <partial name="_ValidationScriptsPartial" />
 }
 
-<script>
-    $('.file-upload').file_upload();
-</script>
+<script>$('.file-upload').file_upload();</script>

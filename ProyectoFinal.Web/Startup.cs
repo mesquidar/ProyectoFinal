@@ -8,6 +8,11 @@ using Microsoft.Extensions.Hosting;
 using ProyectoFinal.CORE;
 using ProyectoFinal.DAL;
 using ProyectoFinal.IFR.Email;
+using ProyectoFinal.CORE.Contracts;
+using ProyectoFinal.Application;
+using ProyectoFinal.IFR.Log;
+using Microsoft.AspNetCore.Http.Features;
+
 
 namespace ProyectoFinal.Web
 {
@@ -36,12 +41,23 @@ namespace ProyectoFinal.Web
             services.AddRazorPages();
             services.AddMvc();
 
+
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+            });
+
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+            services.AddScoped<ILogEvent, Log4NetManager>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IMalwareManager, MalwareManager>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +81,7 @@ namespace ProyectoFinal.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {

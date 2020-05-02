@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProyectoFinal.CORE;
+using ProyectoFinal.CORE.Contracts;
 using ProyectoFinal.CORE.Cuckoo;
 using ProyectoFinal.CORE.ThreatCrowd;
 using ProyectoFinal.CORE.VirusTotal;
 
 namespace ProyectoFinal.DAL
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -40,7 +42,7 @@ namespace ProyectoFinal.DAL
         /// <summary>
         /// Genera tabla de virustotal
         /// </summary>
-        public DbSet<VirusTotalInfo> VirusTotalInfo { get; set; }
+        public DbSet<VirusTotalInfo> VirusTotalInfos { get; set; }
 
         /// <summary>
         /// Genera tabla de productos de comnetarios de virustotal
@@ -226,5 +228,9 @@ namespace ProyectoFinal.DAL
         /// </summary>
         public DbSet<SignatureReferences> SignatureReferences { get; set; }
 
+        public Task<int> SaveChangesAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

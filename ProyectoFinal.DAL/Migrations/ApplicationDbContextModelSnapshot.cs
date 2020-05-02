@@ -1094,6 +1094,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MD5")
                         .HasColumnType("nvarchar(max)");
 
@@ -1107,6 +1113,9 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SHA256")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -1416,7 +1425,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasIndex("MalwareId");
 
-                    b.ToTable("VirusTotalInfo");
+                    b.ToTable("VirusTotalInfos");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.VirusTotal.VirusTotalScans", b =>

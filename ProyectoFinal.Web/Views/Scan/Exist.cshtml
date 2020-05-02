@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Existe";
+}
+
+@if (TempData["exist"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Html.Encode(TempData["exist"])
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <p>O pulse el siguiente botón para acceder</p>
+    <button class="btn btn-primary">Ir al analisis</button>
+}
+else
+{
+    <script>
+
+        document.location.href = "/Scan";
+    </script>
+    
+}

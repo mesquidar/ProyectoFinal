@@ -20,9 +20,11 @@ namespace ProyectoFinal.Web
         {
             //CreateHostBuilder(args).Build().Run();
             var host = CreateHostBuilder(args).Build();
+     
             using (var scope = host.Services.CreateScope())
             {
                 var serviceProvider = scope.ServiceProvider;
+                
                 try
                 {
                     var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -34,7 +36,7 @@ namespace ProyectoFinal.Web
                     Debug.WriteLine(ex.Message);
                 }
             }
-
+            
             host.Run();
         }
 
@@ -42,7 +44,10 @@ namespace ProyectoFinal.Web
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>().UseKestrel(options =>
+                    {
+                        options.Limits.MaxRequestBodySize = null;
+                    }); 
                 });
     }
 }

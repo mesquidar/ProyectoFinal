@@ -1,0 +1,76 @@
+﻿@model IQueryable<ProyectoFinal.CORE.Malware>
+@{
+    ViewData["Title"] = "Analizando Muestra";
+}
+
+<script src="~/scripts/signalr.min.js"></script>
+
+@if (TempData["creado"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Html.Encode(TempData["creado"])
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div align="center">
+    <div class="col-md-10">
+        <div class="card">
+            <h1 class="card-header elegant-color white-text text-center py-4">Analizando...</h1>
+            <div class="card-body px-lg-5 pt-0">
+
+                <div align="center">
+                    <br />
+                    <h3>Analizando @Model.FirstOrDefault().Name</h3>
+                    <h5>
+                        <strong>Nombre:</strong>
+                        <small class="text-muted">@Model.FirstOrDefault().FileName</small>
+                    </h5>
+                    <h5>
+                        <strong>MD5:</strong>
+                        <small data-id="@Model.FirstOrDefault().MD5" class="text-muted">@Model.FirstOrDefault().MD5</small>
+                    </h5>
+                    <h5>
+                        <strong>SHA256:</strong>
+                        <small class="text-muted">@Model.FirstOrDefault().SHA256</small>
+                    </h5><br />
+
+                    <label id="status">Empezando el analisis...</label><br />
+
+                    <div class="spinner-border text-primary"  style="width: 5rem; height: 5rem;" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        var md5 = $(this).data("id");
+        $.ajax({
+            type: "POST",
+            url: "/Scan/StartAnalysis",
+            data: { md5: md5 },
+
+        });        
+    });
+
+    setInterval(fetchdata, 5000);
+
+    function fetchdata() {
+        $.ajax({
+            url: '/Scan/GetStatus',
+            type: 'GET',
+            success: function (response) {
+                $('#status').text(response);
+            }
+        });
+    }
+</script>
