@@ -61,7 +61,6 @@ namespace ProyectoFinal.Web
             services.AddScoped<IMalwareManager, MalwareManager>();
             services.AddScoped<IVirusTotalManager, VirusTotalManager>();
             services.AddScoped<IVirusTotalScanManager, VirusTotalScanManager>();
-            services.AddScoped<IVirusTotalCommentManager, VirusTotalCommentManager>();
 
         }
 
