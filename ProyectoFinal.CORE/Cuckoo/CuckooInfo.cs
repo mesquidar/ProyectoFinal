@@ -13,6 +13,11 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
+        /// id del escaneo dentro de cuckoo
+        /// </summary>
+        public int CuckooScanId { get; set; }
+
+        /// <summary>
         /// Id del malware asociado
         /// </summary>
         public int Malware_Id { get; set; }

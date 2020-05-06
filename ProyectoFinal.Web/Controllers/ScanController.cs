@@ -20,6 +20,7 @@ using System.Net.Http.Headers;
 using System.Diagnostics;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using ProyectoFinal.CORE.Contracts.Cuckoo;
 
 namespace ProyectoFinal.Web.Controllers
 {
@@ -31,6 +32,25 @@ namespace ProyectoFinal.Web.Controllers
         IMalwareManager malwareManager = null;
         IVirusTotalManager vtManager = null;
         IVirusTotalScanManager vtScanManager = null;
+        ICuckooInfoManager cuckooInfoManager = null;
+        ICuckooTargetManager cuckooTargetManager = null;
+        ITargetPidsManager targetPidsManager = null;
+        ITargetUrlsManager targetUrlsManager = null;
+        ICuckooDroppedManager droppedManager = null;
+        IDroppedPidsManager droppedPidsManager = null;
+        IDroppedUrlsManager droppedUrlsManager=null;
+        ICuckooStaticManager cuckooStaticManager = null;
+        IPeImportsManager peImportsManager = null;
+        IPeExportsManager peExportsManager = null;
+        IImportsManager importsManager = null;
+        IExportsManager exportsManager = null;
+        IPeResourcesManager peResourcesManager = null;
+        IPeSectionsManager peSectionsManager = null;
+        IStaticKeysManager staticKeysManager = null;
+        IStaticSignaturesManager staticSignaturesManager = null;
+        ICuckooBehaviorManager cuckooBehaviorManager = null;
+        IProcessTreeManager processTreeManager = null;
+        IBehaviorSummaryManager BehaviorSummaryManager = null;
         ILogEvent _log = null;
 
         //definimos variables que se utilizaran para mostrar el progreso en el front
@@ -48,11 +68,36 @@ namespace ProyectoFinal.Web.Controllers
         /// <param name="malwareManager">manager de malware</param>
         /// <param name="log">log</param>
         public ScanController(IMalwareManager malwareManager, IVirusTotalManager vtManager,IVirusTotalScanManager vtScanManager,
-            ILogEvent log, IHostingEnvironment hostingEnvironment)
+            ICuckooInfoManager cuckooInfoManager, ILogEvent log, IHostingEnvironment hostingEnvironment,
+            ICuckooTargetManager cuckooTargetManager, ITargetUrlsManager targetUrlsManager, ITargetPidsManager targetPidsManager,
+            ICuckooDroppedManager droppedManager,IDroppedUrlsManager droppedUrlsManager, IDroppedPidsManager droppedPidsManager,
+            ICuckooStaticManager cuckooStaticManager, IPeExportsManager peExportsManager, IPeImportsManager peImportsManager,
+            IImportsManager importsManager, IExportsManager exportsManager, IPeResourcesManager peResourcesManager, IPeSectionsManager peSectionsManager,
+            IStaticKeysManager staticKeysManager, IStaticSignaturesManager staticSignaturesManager,ICuckooBehaviorManager cuckooBehaviorManager,
+            IProcessTreeManager processTreeManager, IBehaviorSummaryManager behaviorSummaryManager)
         {
             this.malwareManager = malwareManager;
             this.vtManager = vtManager;
             this.vtScanManager = vtScanManager;
+            this.cuckooInfoManager = cuckooInfoManager;
+            this.cuckooTargetManager = cuckooTargetManager;
+            this.targetPidsManager = targetPidsManager;
+            this.targetUrlsManager = targetUrlsManager;
+            this.droppedManager = droppedManager;
+            this.droppedPidsManager = droppedPidsManager;
+            this.droppedUrlsManager = droppedUrlsManager;
+            this.cuckooStaticManager = cuckooStaticManager;
+            this.peResourcesManager = peResourcesManager;
+            this.peSectionsManager = peSectionsManager;
+            this.peImportsManager = peImportsManager;
+            this.peExportsManager = peExportsManager;
+            this.importsManager = importsManager;
+            this.exportsManager = exportsManager;
+            this.staticKeysManager = staticKeysManager;
+            this.staticSignaturesManager = staticSignaturesManager;
+            this.cuckooBehaviorManager = cuckooBehaviorManager;
+            this.processTreeManager = processTreeManager;
+            this.BehaviorSummaryManager = behaviorSummaryManager;
             _log = log;
             _appEnvironment = hostingEnvironment;
         }
@@ -213,8 +258,12 @@ namespace ProyectoFinal.Web.Controllers
 
                 //await StartVirusTotalFileAsync(malware);
 
-                await StartCuckooAnalysis(malware);
-               
+                //await StartCuckooAnalysis(malware);
+
+                dynamic report = await GetCuckooReport(14);
+                //lanzamos metodo que guardara el report en base de datos
+                await SaveCuckooReport(report, malware);
+
 
                 return null;
             }
@@ -384,7 +433,9 @@ namespace ProyectoFinal.Web.Controllers
                     int task = data.task_id;
                     //lanzamos el siguiente metodo que esperara a que termine el analisis dentro de cuckoo
                     await WaitStatusCuckoo(task);
-                    await GetCuckooReport(task,malware);
+                    //dynamic report = await GetCuckooReport(task);
+                    //lanzamos metodo que guardara el report en base de datos
+                    //await SaveCuckooReport(report,malware);
 
                 }
                 else
@@ -433,8 +484,6 @@ namespace ProyectoFinal.Web.Controllers
                             string res = result.Result;
                             // del resultado obtenido en string lo pasamos a json y obtenimos el id de la tarea
                             dynamic data = JObject.Parse(res);
-                            Console.WriteLine(data);
-                            Console.WriteLine(data.task.status);
                             status = data.task.status;
                             await Task.Delay(3000);
 
@@ -450,7 +499,7 @@ namespace ProyectoFinal.Web.Controllers
 
         }
 
-        public async Task GetCuckooReport(int id, Malware malware)
+        public async Task<dynamic> GetCuckooReport(int id)
         {
     
                 using (var httpClient = new HttpClient())
@@ -468,26 +517,452 @@ namespace ProyectoFinal.Web.Controllers
                             HttpContent content = response.Content;
                             await content.ReadAsStringAsync();
                             var result = content.ReadAsStringAsync();
-                            string res = result.Result;
+                            //string res = result.Result;
                             // del resultado obtenido en string lo pasamos a json y obtenimos el id de la tarea
-                            dynamic data = JObject.Parse(res);
+                            JObject data = JObject.Parse(result.Result);
+                        
 
-
-
-
-                            await Task.Delay(3000);
+                        return data;
 
                         }
                         else
                         {
                             Console.WriteLine("{0} ({1}) {2}", (int)response.StatusCode, response.ReasonPhrase, response.RequestMessage);
+                        return null;
                         }
 
                     }
                 }
             }
 
-        
+        public async Task SaveCuckooReport(dynamic data, Malware malware)
+        {
+            try
+            {
+                //creamos un nuevo modelo de CuckooInfo donde le pasamos los datos obtenidos del analisis
+                CORE.Cuckoo.CuckooInfo info = new CORE.Cuckoo.CuckooInfo
+                {
+                    CuckooScanId = data.info.id,
+                    Malware_Id = malware.Id,
+                    Category = data.info.category,
+                    Package = data.info.package,
+                    Score = data.info.score
+                };
+                
+                cuckooInfoManager.Add(info);
+                cuckooInfoManager.Context.SaveChanges();
+
+                //creamos un nuevo modelo de cuckoo target para guardar los datos obtenidos
+                CORE.Cuckoo.CuckooTarget target = new CORE.Cuckoo.CuckooTarget
+                {
+                    Cuckoo_Id = data.info.id,
+                    crc32 = data.target.file.crc32,
+                    md5 = data.target.file.md5,
+                    Name = data.target.file.name,
+                    Path = data.target.file.path,
+                    Size = data.target.file.size,
+                    Ssdeep = data.target.file.ssdeep,
+                };
+
+                cuckooTargetManager.Add(target);
+                cuckooTargetManager.Context.SaveChanges();
+
+                //por cada targeturl que haya la insertamos en la tabla TargetUrls               
+                foreach (var url in data.target.file.urls)
+                {
+                    CORE.Cuckoo.TargetUrls tUrls = new CORE.Cuckoo.TargetUrls
+                    {
+                        Target_Id = target.Id,
+                        Url = url
+                    };
+
+                    targetUrlsManager.Add(tUrls);
+                };
+
+                targetUrlsManager.Context.SaveChanges();
+
+                //guardamos cuckoo dropped porcada archivo droppeado que haya
+                foreach(var drop in data.dropped)
+                {
+                    CORE.Cuckoo.CuckooDropped dropped = new CORE.Cuckoo.CuckooDropped
+                    {
+                        Cuckoo_Id = data.info.id,
+                        crc32 = drop.crc32,
+                        FilePath = drop.filepath,
+                        md5 = drop.md5,
+                        Name = drop.name,
+                        Path = drop.path,
+                        Size = drop.size,
+                    };
+
+                    droppedManager.Add(dropped);
+
+                    //guardamos los pids del dropped
+                    foreach (var pid in drop.pids)
+                    {
+                        CORE.Cuckoo.DroppedPids droppedPids = new CORE.Cuckoo.DroppedPids
+                        {
+                            Dropped_Id = dropped.Id,
+                            Pid = pid,
+                        };
+
+                        droppedPidsManager.Add(droppedPids);
+                    }
+
+                    //guardamos las url del dropped
+                    foreach (var url in drop.urls)
+                    {
+                        CORE.Cuckoo.DroppedUrls droppedUrls = new CORE.Cuckoo.DroppedUrls
+                        {
+                            Dropped_Id = dropped.Id,
+                            Url = url,
+                        };
+
+                        droppedUrlsManager.Add(droppedUrls);
+                    }
+
+                };
+               
+                droppedManager.Context.SaveChanges();
+                droppedPidsManager.Context.SaveChanges();
+                droppedUrlsManager.Context.SaveChanges();
+
+
+                //guardamos cuckoo ststic y sus derivados
+                CORE.Cuckoo.CuckooStatic cStatic = new CORE.Cuckoo.CuckooStatic
+                {
+                    Cuckoo_Id = data.info.id,
+                    ImportedDllCount = data.@static.imported_dll_count,
+                    PeImphash = data.@static.pe_imphash,
+                    PeTimestamp = data.@static.pe_timestamp,
+                };
+
+                cuckooStaticManager.Add(cStatic);
+                cuckooStaticManager.Context.SaveChanges();
+
+                //POR CADA PE IMPORT AÑADIMOS UN LINEA
+                foreach (var im in data.@static.pe_imports)
+                {
+                    CORE.Cuckoo.PeImport peImport = new CORE.Cuckoo.PeImport
+                    {
+                        CuckooStatic_Id = cStatic.Id,
+                        Dll = im.dll,
+
+                    };
+
+                    peImportsManager.Add(peImport);
+                    
+                    //dentro de cada pe import añadimos todos los imports relaciondos
+                    foreach (var import in im)
+                    {
+                        CORE.Cuckoo.Imports imp = new CORE.Cuckoo.Imports
+                        {
+                            PeImport_Id = peImport.Id,
+                            Address = import.address,
+                            Name = import.name,
+                        };
+
+                        importsManager.Add(imp);
+
+                    };
+
+                }
+                peImportsManager.Context.SaveChanges();
+                importsManager.Context.SaveChanges();
+
+                //por cada pe export 
+                foreach (var exp in data.@static.pe_exports)
+                {
+                    CORE.Cuckoo.PeExport peExport = new CORE.Cuckoo.PeExport
+                    {
+                        CuckooStatic_Id = cStatic.Id,
+                        Dll = exp.dll,
+
+                    };
+
+                    peExportsManager.Add(peExport);
+
+                    // por cada pe export añadimo los exports relacionados
+                    foreach (var export in exp)
+                    {
+                        CORE.Cuckoo.Exports exAdd = new CORE.Cuckoo.Exports
+                        {
+                            PeExport_Id = peExport.Id,
+                            Address = export.address,
+                            Name = export.name,
+                        };
+
+                        exportsManager.Add(exAdd);
+
+                    };
+
+                }
+                peExportsManager.Context.SaveChanges();
+                exportsManager.Context.SaveChanges();
+
+                //añadimos los pereources
+                foreach (var resource in data.@static.pe_resources)
+                {
+                    CORE.Cuckoo.PeResource peResource = new CORE.Cuckoo.PeResource
+                    {
+                        Static_Id = cStatic.Id,
+                        Filetype = resource.filetype,
+                        Language = resource.language,
+                        Name = resource.name,
+                        Offset = resource.offset,
+                        Size = resource.size,                 
+
+                    };
+                    peResourcesManager.Add(peResource);
+                }
+
+                peResourcesManager.Context.SaveChanges();
+
+                foreach (var section in data.@static.pe_sections)
+                {
+                    CORE.Cuckoo.PeSection peSection = new CORE.Cuckoo.PeSection
+                    {
+                        Static_Id = cStatic.Id,
+                        Entropy = section.entropy,
+                        Name = section.name,
+                        SizeOfData = section.size_of_data,
+                        VirtualAddress = section.virtual_address,
+                        VirtualSize = section.virtual_size,
+                    };
+
+                    peSectionsManager.Add(peSection);
+                };
+
+                peSectionsManager.Context.SaveChanges();
+
+                //aañdimos static signatures
+                foreach(var sig in data.@static.signature)
+                {
+                    CORE.Cuckoo.StaticSignature staticSignature = new CORE.Cuckoo.StaticSignature
+                    {
+                        Static_Id = cStatic.Id,
+                        CommonName = sig.common_name,
+                        Country = sig.country,
+                        Email = sig.email,
+                        Locality = sig.locality,
+                        Organization = sig.organization,
+                        SerialNumber = sig.serial_number
+                    };
+
+                    staticSignaturesManager.Add(staticSignature);
+
+                };
+
+                staticSignaturesManager.Context.SaveChanges();
+
+                //añadimos pe keys
+
+                foreach (var key in data.@static.keys)
+                {
+                    CORE.Cuckoo.StaticKeys staticKeys = new CORE.Cuckoo.StaticKeys
+                    {
+                        CuckooStatic_Id = cStatic.Id,
+                        Keys = key
+
+                    };
+                    staticKeysManager.Add(key);
+                }
+
+                staticKeysManager.Context.SaveChanges();
+
+                //añadimos cuckoo behavior
+                CORE.Cuckoo.CuckooBehavior cuckooBehavior = new CORE.Cuckoo.CuckooBehavior
+                {
+                    Cuckoo_Id = data.info.id
+                };
+
+                //AÑADIMOS LOS REGISTROS DE DIRECTORY CREATED DENTRO DE BEHAVIOR SUMMARY
+                foreach (var directory in data.behavior.summary.directory_created)
+                {
+                    CORE.Cuckoo.BehaviorSummary dirCreated = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "Directory Created",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(dirCreated);
+                }
+
+                foreach (var directory in data.behavior.summary.directory_enumerated)
+                {
+                    CORE.Cuckoo.BehaviorSummary dirEnum = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "Directory Enumerated",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(dirEnum);
+                }
+
+                foreach (var directory in data.behavior.summary.dll_loaded)
+                {
+                    CORE.Cuckoo.BehaviorSummary dllLoaded = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "DLL Loaded",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(dllLoaded);
+                }
+
+                foreach (var directory in data.behavior.summary.file_created)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileCreated = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Created",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileCreated);
+                }
+
+                foreach (var directory in data.behavior.summary.file_deleted)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileDeleted = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Deleted",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileDeleted);
+                }
+
+                foreach (var directory in data.behavior.summary.file_exists)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileExists= new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Exists",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileExists);
+                }
+
+                foreach (var directory in data.behavior.summary.file_failed)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileFailed = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Failed",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileFailed);
+                }
+
+                foreach (var directory in data.behavior.summary.file_opened)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileOpened = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Opened",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileOpened);
+                }
+
+                foreach (var directory in data.behavior.summary.file_read)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileRead = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Read",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileRead);
+                }
+
+                foreach (var directory in data.behavior.summary.file_written)
+                {
+                    CORE.Cuckoo.BehaviorSummary fileWritten = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "File Written",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(fileWritten);
+                }
+
+                foreach (var directory in data.behavior.summary.guid)
+                {
+                    CORE.Cuckoo.BehaviorSummary guid = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "Guid",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(guid);
+                }
+
+                foreach (var directory in data.behavior.summary.regkey_opened)
+                {
+                    CORE.Cuckoo.BehaviorSummary regKeyOpened = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "RegKey Opened",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(regKeyOpened);
+                }
+
+                foreach (var directory in data.behavior.summary.regkey_read)
+                {
+                    CORE.Cuckoo.BehaviorSummary regKeyRead = new CORE.Cuckoo.BehaviorSummary
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        Name = "Regkey Read",
+                        Strings = directory
+                    };
+
+                    BehaviorSummaryManager.Add(regKeyRead);
+                }
+
+                BehaviorSummaryManager.Context.SaveChanges();
+
+                //añadimos los registros de process tree
+                foreach (var process in data.behavior.summary.processtree)
+                {
+                    CORE.Cuckoo.ProcessTree processTree = new CORE.Cuckoo.ProcessTree
+                    {
+                        Behavior_Id = cuckooBehavior.Id,
+                        CommandLine = process.command_line,
+                        FirstSeen = process.first_seen,
+                        Pid = process.pid,
+                        Ppid = process.ppid,
+                        ProcessName = process.process_name,
+                        Track = process.track
+                    };
+
+                    processTreeManager.Add(processTree);
+                }
+
+                processTreeManager.Context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _log.WriteError(ex.Message, ex);
+                Redirect("Index");//guardamos el log si se produce una excepcion
+            }
+
+        }
 
 
         /// <summary>

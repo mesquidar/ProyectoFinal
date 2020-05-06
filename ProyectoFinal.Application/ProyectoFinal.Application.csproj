@@ -17,5 +17,6 @@
 
   <ItemGroup>
     <Folder Include="VirusTotal\" />
+    <Folder Include="Cuckoo\" />
   </ItemGroup>
 </Project>

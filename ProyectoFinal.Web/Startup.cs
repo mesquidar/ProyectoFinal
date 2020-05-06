@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +15,8 @@ using ProyectoFinal.IFR.Log;
 using Microsoft.AspNetCore.Http.Features;
 using ProyectoFinal.CORE.Contracts.VirusTotal;
 using ProyectoFinal.Application.VirusTotal;
+using ProyectoFinal.CORE.Contracts.Cuckoo;
+using ProyectoFinal.Application.Cuckoo;
 
 namespace ProyectoFinal.Web
 {
@@ -61,6 +64,23 @@ namespace ProyectoFinal.Web
             services.AddScoped<IMalwareManager, MalwareManager>();
             services.AddScoped<IVirusTotalManager, VirusTotalManager>();
             services.AddScoped<IVirusTotalScanManager, VirusTotalScanManager>();
+            services.AddScoped<ICuckooInfoManager, CuckooInfoManager>();
+            services.AddScoped<ICuckooTargetManager, CuckooTargetManager>();
+            services.AddScoped<ITargetPidsManager, TargetPidsManager>();
+            services.AddScoped<ITargetUrlsManager, TargetUrlsManager>();
+            services.AddScoped<ICuckooDroppedManager, CuckooDroppedManager>();
+            services.AddScoped<IDroppedPidsManager, DroppedPidsManager>();
+            services.AddScoped<IDroppedUrlsManager, DroppedUrlsManager>();
+            services.AddScoped<ICuckooStaticManager, CuckooStaticManager>();
+            services.AddScoped<IPeExportsManager, PeExportsManager>();
+            services.AddScoped<IPeImportsManager, PeImportsManager>();
+            services.AddScoped<IPeResourcesManager, PeResourcesManager>();
+            services.AddScoped<IStaticSignaturesManager, StaticSignaturesManager>();
+            services.AddScoped<IStaticKeysManager, StaticKeysManager>();
+            services.AddScoped<ICuckooBehaviorManager, CuckooBehaviorManager>();
+            services.AddScoped<ICuckooSigantureManager, CuckooSignatureManager>();
+            services.AddScoped<IProcessTreeManager, ProcessTreeManager>();
+            services.AddScoped<IBehaviorSummaryManager, BehaviorSummaryManager>();
 
         }
 

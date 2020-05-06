@@ -17,7 +17,12 @@ namespace ProyectoFinal.DAL
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-        
+
+        /// <summary>
+        /// Metodo qe implement el guardado de cambios de forma asincrona
+        /// </summary>
+        /// <returns></returns>
+        public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
         /// <summary>
         /// Genera tabla comentarios
@@ -228,9 +233,5 @@ namespace ProyectoFinal.DAL
         /// </summary>
         public DbSet<SignatureReferences> SignatureReferences { get; set; }
 
-        public Task<int> SaveChangesAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

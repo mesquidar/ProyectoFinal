@@ -71,16 +71,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// </summary>
         public List<TargetUrls> Urls { get; set; }
 
-        /// <summary>
-        /// Yaraname encontrado en el archivo
-        /// </summary>
-        public string YaraName { get; set; }
-
-        /// <summary>
-        /// descripcion de yara enconbtrada
-        /// </summary>
-        public string YaraDescription { get; set; }
-
 
     }
 }
