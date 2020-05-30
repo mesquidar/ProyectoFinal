@@ -22,11 +22,6 @@ namespace ProyectoFinal.CORE
         public virtual Malware Malware { get; set; }
 
         /// <summary>
-        /// nombre del screenshot
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
         /// ruta del screenshot
         /// </summary>
         public string PathFile { get; set; }

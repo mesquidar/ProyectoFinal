@@ -17,6 +17,8 @@ using ProyectoFinal.CORE.Contracts.VirusTotal;
 using ProyectoFinal.Application.VirusTotal;
 using ProyectoFinal.CORE.Contracts.Cuckoo;
 using ProyectoFinal.Application.Cuckoo;
+using ProyectoFinal.CORE.Contracts.ThreatCrowd;
+using ProyectoFinal.Application.ThreatCrowd;
 
 namespace ProyectoFinal.Web
 {
@@ -75,12 +77,30 @@ namespace ProyectoFinal.Web
             services.AddScoped<IPeExportsManager, PeExportsManager>();
             services.AddScoped<IPeImportsManager, PeImportsManager>();
             services.AddScoped<IPeResourcesManager, PeResourcesManager>();
+            services.AddScoped<IPeSectionsManager, PeSectionsManager>();
             services.AddScoped<IStaticSignaturesManager, StaticSignaturesManager>();
             services.AddScoped<IStaticKeysManager, StaticKeysManager>();
             services.AddScoped<ICuckooBehaviorManager, CuckooBehaviorManager>();
             services.AddScoped<ICuckooSigantureManager, CuckooSignatureManager>();
             services.AddScoped<IProcessTreeManager, ProcessTreeManager>();
             services.AddScoped<IBehaviorSummaryManager, BehaviorSummaryManager>();
+            services.AddScoped<IImportsManager, ImportsManager>();
+            services.AddScoped<IExportsManager, ExportsManager>();
+            services.AddScoped<IMarkArgumentsManager, MarkArgumentsManager>();
+            services.AddScoped<IMarkCallManager, MarkCallManager>();
+            services.AddScoped<IMarksManager, MarksManager>();
+            services.AddScoped<IMarkSectionManager, MarkSectionManager>();
+            services.AddScoped<IProcessTreeManager, ProcessTreeManager>();
+            services.AddScoped<IScreenShotManager, ScreenShotManager>();
+            services.AddScoped<ITCDomainsManager, TCDomainsManager>();
+            services.AddScoped<ITCEmailsManager, TCEmailsManager>();
+            services.AddScoped<ITCHashesManager, TCHashesManager>();
+            services.AddScoped<ITCIpsManager, TCIpsManager>();
+            services.AddScoped<ITCReferencesManager, TCReferencesManager>();
+            services.AddScoped<ITCScansManager, TCScansManager>();
+            services.AddScoped<ITCSubdomainsManager, TCSubdomainsManager>();
+            services.AddScoped<IThreatCrowdInfoManager, ThreatCrowdInfoManager>();
+            services.AddScoped<ITCResolutionManager, TCResolutionManager>();
 
         }
 

@@ -30,11 +30,6 @@ namespace ProyectoFinal.DAL
         public DbSet<Comment> Comments { get; set; }
 
         /// <summary>
-        /// Genera tabla archivos
-        /// </summary>
-        public DbSet<File> Files { get; set; }
-
-        /// <summary>
         /// Genera tabla de malwares
         /// </summary>
         public DbSet<Malware> Malwares { get; set; }

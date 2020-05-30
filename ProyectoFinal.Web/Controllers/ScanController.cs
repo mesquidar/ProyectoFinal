@@ -21,6 +21,8 @@ using System.Diagnostics;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using ProyectoFinal.CORE.Contracts.Cuckoo;
+using System.IO.Compression;
+using ProyectoFinal.CORE.Contracts.ThreatCrowd;
 
 namespace ProyectoFinal.Web.Controllers
 {
@@ -51,6 +53,21 @@ namespace ProyectoFinal.Web.Controllers
         ICuckooBehaviorManager cuckooBehaviorManager = null;
         IProcessTreeManager processTreeManager = null;
         IBehaviorSummaryManager BehaviorSummaryManager = null;
+        ICuckooSigantureManager cuckooSigantureManager = null;
+        IMarkArgumentsManager markArgumentsManager = null;
+        IMarkCallManager markCallManager = null;
+        IMarkSectionManager markSectionManager = null;
+        IMarksManager marksManager = null;
+        IScreenShotManager screenShotManager = null;
+        IThreatCrowdInfoManager threatCrowdInfoManager = null;
+        ITCDomainsManager tCDomainsManager = null;
+        ITCEmailsManager tCEmailsManager = null;
+        ITCHashesManager tCHashesManager = null;
+        ITCIpsManager tCIpsManager = null;
+        ITCReferencesManager tCReferencesManager = null;
+        ITCResolutionManager tCResolutionManager = null;
+        ITCScansManager tCScansManager = null;
+        ITCSubdomainsManager tCSubdomainsManager = null;
         ILogEvent _log = null;
 
         //definimos variables que se utilizaran para mostrar el progreso en el front
@@ -74,7 +91,11 @@ namespace ProyectoFinal.Web.Controllers
             ICuckooStaticManager cuckooStaticManager, IPeExportsManager peExportsManager, IPeImportsManager peImportsManager,
             IImportsManager importsManager, IExportsManager exportsManager, IPeResourcesManager peResourcesManager, IPeSectionsManager peSectionsManager,
             IStaticKeysManager staticKeysManager, IStaticSignaturesManager staticSignaturesManager,ICuckooBehaviorManager cuckooBehaviorManager,
-            IProcessTreeManager processTreeManager, IBehaviorSummaryManager behaviorSummaryManager)
+            IProcessTreeManager processTreeManager, IBehaviorSummaryManager BehaviorSummaryManager, ICuckooSigantureManager cuckooSigantureManager,
+            IMarksManager marksManager, IMarkArgumentsManager markArgumentsManager, IMarkCallManager markCallManager, IMarkSectionManager markSectionManager,
+            IScreenShotManager screenShotManager, IThreatCrowdInfoManager threatCrowdInfoManager, ITCDomainsManager tCDomainsManager, ITCEmailsManager tCEmailsManager,
+            ITCHashesManager tCHashesManager, ITCIpsManager tCIpsManager, ITCReferencesManager tCReferencesManager, ITCResolutionManager tCResolutionManager,
+            ITCScansManager tCScansManager, ITCSubdomainsManager tCSubdomainsManager)
         {
             this.malwareManager = malwareManager;
             this.vtManager = vtManager;
@@ -97,7 +118,23 @@ namespace ProyectoFinal.Web.Controllers
             this.staticSignaturesManager = staticSignaturesManager;
             this.cuckooBehaviorManager = cuckooBehaviorManager;
             this.processTreeManager = processTreeManager;
-            this.BehaviorSummaryManager = behaviorSummaryManager;
+            this.BehaviorSummaryManager = BehaviorSummaryManager;
+            this.cuckooSigantureManager = cuckooSigantureManager;
+            this.markSectionManager = markSectionManager;
+            this.marksManager = marksManager;
+            this.markArgumentsManager = markArgumentsManager;
+            this.markCallManager = markCallManager;
+            this.screenShotManager = screenShotManager;
+            this.threatCrowdInfoManager = threatCrowdInfoManager;
+            this.tCDomainsManager = tCDomainsManager;
+            this.tCEmailsManager = tCEmailsManager;
+            this.tCHashesManager = tCHashesManager;
+            this.tCIpsManager = tCIpsManager;
+            this.tCReferencesManager = tCReferencesManager;
+            this.tCResolutionManager = tCResolutionManager;
+            this.tCScansManager = tCScansManager;
+            this.tCSubdomainsManager = tCSubdomainsManager;
+
             _log = log;
             _appEnvironment = hostingEnvironment;
         }
@@ -254,17 +291,22 @@ namespace ProyectoFinal.Web.Controllers
         {
             try
             {
+                //obtenemos el malware a analizar
                 var malware = malwareManager.GetById(id);
-
+                //lanzamos el metodo que empezara el analisis de virustotal
                 //await StartVirusTotalFileAsync(malware);
-
-                //await StartCuckooAnalysis(malware);
-
-                dynamic report = await GetCuckooReport(14);
-                //lanzamos metodo que guardara el report en base de datos
-                await SaveCuckooReport(report, malware);
-
-
+                //lanzamos el metodo que empezara el analisis de cuckoo
+                //int cuckooId = await StartCuckooAnalysis(malware);
+                int cuckooId = 0;
+                //lanzamos metodo que obtendra el informe del analisis realizado si el id de cuckoo es diferente 0
+                if (cuckooId != 0)
+                {
+                    dynamic report = await GetCuckooReport(cuckooId);
+                    //lanzamos metodo que guardara el report en base de datos
+                    await SaveCuckooReport(report, malware);
+                }
+                //await GetScreenShotsAsync(14,malware.Id);
+                await StartThreatCrowdAnalysisAsync(malware.Id, malware.MD5);
                 return null;
             }
             catch (Exception ex)
@@ -392,16 +434,19 @@ namespace ProyectoFinal.Web.Controllers
         /// </summary>
         /// <param name="malware">malware</param>
         /// <returns></returns>
-        public async Task StartCuckooAnalysis(Malware malware)
+        public async Task<int> StartCuckooAnalysis(Malware malware)
         {
             try
             {
-
+                int task = 0;
+                progress = 30;
+                status = "Empezando análisis en Cuckoo Sandbox...";
                 //creamos nuevo cliente http
                 HttpClient client = new HttpClient();
                 client.BaseAddress = new Uri(CuckooHost);
                 client.DefaultRequestHeaders.Clear();
 
+                
                 //cremos un unevo request en modo POST
                 var request = new HttpRequestMessage(new HttpMethod("POST"), CuckooHost + "/tasks/create/file");
 
@@ -410,7 +455,8 @@ namespace ProyectoFinal.Web.Controllers
 
                 //activity.current se deja en null sino net core añade request id que da problemas con la API de cuckoo
                 Activity.Current = null;
-
+                progress = 32;
+                status = "Subiendo archivo...";
                 //cargamos el archivo en formato MultipartFormDataContent 
                 var multipartContent = new MultipartFormDataContent();
                 multipartContent.Add(new ByteArrayContent(System.IO.File.ReadAllBytes(malware.FilePath)), "file", Path.GetFileName(malware.FilePath));
@@ -430,19 +476,21 @@ namespace ProyectoFinal.Web.Controllers
                     string res = result.Result;
                     // del resultado obtenido en string lo pasamos a json y obtenimos el id de la tarea
                     dynamic data = JObject.Parse(res);
-                    int task = data.task_id;
+                    task = data.task_id;
                     //lanzamos el siguiente metodo que esperara a que termine el analisis dentro de cuckoo
+                    progress = 35;
+                    status = "Esperando a que termine el análisis...";
                     await WaitStatusCuckoo(task);
-                    //dynamic report = await GetCuckooReport(task);
-                    //lanzamos metodo que guardara el report en base de datos
-                    //await SaveCuckooReport(report,malware);
+                   
 
                 }
                 else
                 {
                     Console.WriteLine("{0} ({1}) {2}", (int)response.StatusCode, response.ReasonPhrase, response.RequestMessage);
+                    Redirect("Index");
                 }
 
+                return task;
 
 
             }
@@ -450,7 +498,9 @@ namespace ProyectoFinal.Web.Controllers
             {
                 //guardamos el log si se produce una excepcion
                 _log.WriteError(ex.Message, ex);
-                Redirect("Index");//guardamos el log si se produce una excepcion
+                 Redirect("Index");//guardamos el log si se produce una excepcion
+                return 0;
+
             }
 
         }
@@ -463,6 +513,8 @@ namespace ProyectoFinal.Web.Controllers
         public async Task WaitStatusCuckoo(int id)
         {
             string status = "pending";
+
+            
 
             while (status != "reported")
             {
@@ -499,8 +551,15 @@ namespace ProyectoFinal.Web.Controllers
 
         }
 
+        /// <summary>
+        /// Metodo que obtiene el informe del malware analizado en cuckoo
+        /// </summary>
+        /// <param name="id">id del analisis</param>
+        /// <returns>informe</returns>
         public async Task<dynamic> GetCuckooReport(int id)
         {
+            progress = 40;
+            status = "Obteniendo informe...";
     
                 using (var httpClient = new HttpClient())
                 {
@@ -539,6 +598,8 @@ namespace ProyectoFinal.Web.Controllers
         {
             try
             {
+                progress = 42;
+                status = "Guardando Cuckoo Info...";
                 //creamos un nuevo modelo de CuckooInfo donde le pasamos los datos obtenidos del analisis
                 CORE.Cuckoo.CuckooInfo info = new CORE.Cuckoo.CuckooInfo
                 {
@@ -551,6 +612,9 @@ namespace ProyectoFinal.Web.Controllers
                 
                 cuckooInfoManager.Add(info);
                 cuckooInfoManager.Context.SaveChanges();
+
+                progress = 44;
+                status = "Guardando Cuckoo Target...";
 
                 //creamos un nuevo modelo de cuckoo target para guardar los datos obtenidos
                 CORE.Cuckoo.CuckooTarget target = new CORE.Cuckoo.CuckooTarget
@@ -567,6 +631,8 @@ namespace ProyectoFinal.Web.Controllers
                 cuckooTargetManager.Add(target);
                 cuckooTargetManager.Context.SaveChanges();
 
+                progress = 46;
+                status = "Guardando Target Urls...";
                 //por cada targeturl que haya la insertamos en la tabla TargetUrls               
                 foreach (var url in data.target.file.urls)
                 {
@@ -581,8 +647,11 @@ namespace ProyectoFinal.Web.Controllers
 
                 targetUrlsManager.Context.SaveChanges();
 
+
                 //guardamos cuckoo dropped porcada archivo droppeado que haya
-                foreach(var drop in data.dropped)
+                progress = 48;
+                status = "Guardando Cuckoo Dropped...";
+                foreach (var drop in data.dropped)
                 {
                     CORE.Cuckoo.CuckooDropped dropped = new CORE.Cuckoo.CuckooDropped
                     {
@@ -598,6 +667,8 @@ namespace ProyectoFinal.Web.Controllers
                     droppedManager.Add(dropped);
 
                     //guardamos los pids del dropped
+                    progress = 50;
+                    status = "Guardando Dropped Pids...";
                     foreach (var pid in drop.pids)
                     {
                         CORE.Cuckoo.DroppedPids droppedPids = new CORE.Cuckoo.DroppedPids
@@ -610,6 +681,8 @@ namespace ProyectoFinal.Web.Controllers
                     }
 
                     //guardamos las url del dropped
+                    progress = 52;
+                    status = "Guardando Dropped Urls...";
                     foreach (var url in drop.urls)
                     {
                         CORE.Cuckoo.DroppedUrls droppedUrls = new CORE.Cuckoo.DroppedUrls
@@ -629,6 +702,8 @@ namespace ProyectoFinal.Web.Controllers
 
 
                 //guardamos cuckoo ststic y sus derivados
+                progress = 54;
+                status = "Guardando Cuckoo Static...";
                 CORE.Cuckoo.CuckooStatic cStatic = new CORE.Cuckoo.CuckooStatic
                 {
                     Cuckoo_Id = data.info.id,
@@ -641,6 +716,8 @@ namespace ProyectoFinal.Web.Controllers
                 cuckooStaticManager.Context.SaveChanges();
 
                 //POR CADA PE IMPORT AÑADIMOS UN LINEA
+                progress = 56;
+                status = "Guardando Static Imports...";
                 foreach (var im in data.@static.pe_imports)
                 {
                     CORE.Cuckoo.PeImport peImport = new CORE.Cuckoo.PeImport
@@ -653,7 +730,7 @@ namespace ProyectoFinal.Web.Controllers
                     peImportsManager.Add(peImport);
                     
                     //dentro de cada pe import añadimos todos los imports relaciondos
-                    foreach (var import in im)
+                    foreach (var import in im.imports)
                     {
                         CORE.Cuckoo.Imports imp = new CORE.Cuckoo.Imports
                         {
@@ -670,7 +747,9 @@ namespace ProyectoFinal.Web.Controllers
                 peImportsManager.Context.SaveChanges();
                 importsManager.Context.SaveChanges();
 
-                //por cada pe export 
+                //por cada pe export
+                progress = 58;
+                status = "Guardando Static Exports...";
                 foreach (var exp in data.@static.pe_exports)
                 {
                     CORE.Cuckoo.PeExport peExport = new CORE.Cuckoo.PeExport
@@ -683,7 +762,7 @@ namespace ProyectoFinal.Web.Controllers
                     peExportsManager.Add(peExport);
 
                     // por cada pe export añadimo los exports relacionados
-                    foreach (var export in exp)
+                    foreach (var export in exp.exports)
                     {
                         CORE.Cuckoo.Exports exAdd = new CORE.Cuckoo.Exports
                         {
@@ -701,6 +780,8 @@ namespace ProyectoFinal.Web.Controllers
                 exportsManager.Context.SaveChanges();
 
                 //añadimos los pereources
+                progress = 60;
+                status = "Guardando Static Resources...";
                 foreach (var resource in data.@static.pe_resources)
                 {
                     CORE.Cuckoo.PeResource peResource = new CORE.Cuckoo.PeResource
@@ -718,6 +799,10 @@ namespace ProyectoFinal.Web.Controllers
 
                 peResourcesManager.Context.SaveChanges();
 
+
+                //guardamos pe sections
+                progress = 62;
+                status = "Guardando Static Sections...";
                 foreach (var section in data.@static.pe_sections)
                 {
                     CORE.Cuckoo.PeSection peSection = new CORE.Cuckoo.PeSection
@@ -736,7 +821,9 @@ namespace ProyectoFinal.Web.Controllers
                 peSectionsManager.Context.SaveChanges();
 
                 //aañdimos static signatures
-                foreach(var sig in data.@static.signature)
+                progress = 64;
+                status = "Guardando Static Signatures...";
+                foreach (var sig in data.@static.signature)
                 {
                     CORE.Cuckoo.StaticSignature staticSignature = new CORE.Cuckoo.StaticSignature
                     {
@@ -756,7 +843,8 @@ namespace ProyectoFinal.Web.Controllers
                 staticSignaturesManager.Context.SaveChanges();
 
                 //añadimos pe keys
-
+                progress = 66;
+                status = "Guardando Static Keys...";
                 foreach (var key in data.@static.keys)
                 {
                     CORE.Cuckoo.StaticKeys staticKeys = new CORE.Cuckoo.StaticKeys
@@ -771,12 +859,16 @@ namespace ProyectoFinal.Web.Controllers
                 staticKeysManager.Context.SaveChanges();
 
                 //añadimos cuckoo behavior
+                progress = 68;
+                status = "Guardando Cuckoo Behavior...";
                 CORE.Cuckoo.CuckooBehavior cuckooBehavior = new CORE.Cuckoo.CuckooBehavior
                 {
                     Cuckoo_Id = data.info.id
                 };
 
                 //AÑADIMOS LOS REGISTROS DE DIRECTORY CREATED DENTRO DE BEHAVIOR SUMMARY
+                progress = 70;
+                status = "Guardando Behavior Summary...";
                 foreach (var directory in data.behavior.summary.directory_created)
                 {
                     CORE.Cuckoo.BehaviorSummary dirCreated = new CORE.Cuckoo.BehaviorSummary
@@ -936,7 +1028,9 @@ namespace ProyectoFinal.Web.Controllers
                 BehaviorSummaryManager.Context.SaveChanges();
 
                 //añadimos los registros de process tree
-                foreach (var process in data.behavior.summary.processtree)
+                progress = 74;
+                status = "Guardando Behavior ProcessTree...";
+                foreach (var process in data.behavior.processtree)
                 {
                     CORE.Cuckoo.ProcessTree processTree = new CORE.Cuckoo.ProcessTree
                     {
@@ -954,6 +1048,106 @@ namespace ProyectoFinal.Web.Controllers
 
                 processTreeManager.Context.SaveChanges();
 
+                //añadimos cuckoo siganture
+                progress = 76;
+                status = "Guardando Cuckoo Signature...";
+                foreach (var sig in data.signatures)
+                {
+                    CORE.Cuckoo.CuckooSignature cuckooSignature = new CORE.Cuckoo.CuckooSignature
+                    {
+                        Malware_Id = malware.Id,
+                        Description = sig.description,
+                        Markcount = sig.markcount,
+                        Severity = sig.severity,
+
+                    };
+
+                    cuckooSigantureManager.Add(cuckooSignature);
+
+                    //dentro de sig añadimos los marks relacionados
+                    progress = 78;
+                    status = "Guardando Siganture Marks...";
+                    foreach (var mark in sig.marks)
+                    {
+                        CORE.Cuckoo.Mark markModel = new CORE.Cuckoo.Mark
+                        {
+                            Siganture_Id = cuckooSignature.Id,
+                            Cid = mark.cid,
+                            Pid = mark.pid,
+                            Type = mark.type,
+                            Category = mark.category,
+                            Description = mark.description,
+                            Ioc = mark.ioc,                          
+                        };
+
+                        marksManager.Add(markModel);
+
+
+                        // desde mark añadimos los call
+                        foreach (var call in mark.call)
+                        {
+
+                            CORE.Cuckoo.MarkCall markCall = new CORE.Cuckoo.MarkCall
+                            {
+                                Mark_Id = markModel.Id,
+                                Category = call.category,
+                                Status = call.status,
+                            };
+
+                            markCallManager.Add(markCall);
+
+                            //DE los call añadimos los markarguments
+                            foreach (var argument in call.arguments)
+                            {
+                                CORE.Cuckoo.MarkArguments markArguments = new CORE.Cuckoo.MarkArguments
+                                {
+                                    MarkCall_Id = markCall.Id,
+                                    BaseAddress = argument.base_address ,
+                                    Length = argument.length,
+                                    ProcessHandle = argument.process_handle,
+                                    ProcessIdentifier = argument.process_identifier,
+                                    Protection = argument.protection,
+                                    AllocationType = argument.argument_type,
+                                    RootPath = argument.root_path,
+                                    Access = argument.access,
+                                    BaseHandle = argument.base_handle,
+                                    KeyHandle = argument.key_handle,
+                                    Options = argument.options,
+                                    Regkey = argument.regkey,
+                                    RegkeyR = argument.regkey_r
+                                };
+
+                                markArgumentsManager.Add(markArguments);
+                            }
+                        }
+
+                        //añadimos marksections
+                        progress = 80;
+                        status = "Guardando Mark Sections...";
+                        foreach (var section in mark.section)
+                        {
+                            CORE.Cuckoo.MarkSection markSection = new CORE.Cuckoo.MarkSection
+                            {
+                                Mark_Id = markModel.Id,
+                                Entropy = section.entropy,
+                                Name = section.name,
+                                SizeOfData = section.size_of_data,
+                                VirtualAddress = section.virtual_address,
+                                VirtualSize = section.virtual_size,
+
+                            };
+
+                            markSectionManager.Add(markSection);
+                        }
+
+                    }
+
+                };
+
+                cuckooSigantureManager.Context.SaveChanges();
+                marksManager.Context.SaveChanges();
+                markCallManager.Context.SaveChanges();
+                markArgumentsManager.Context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -964,6 +1158,157 @@ namespace ProyectoFinal.Web.Controllers
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task GetScreenShotsAsync(int id, int malwareId)
+        {
+            try
+            {
+                progress = 82;
+                status = "Obteniendo Imagenes...";
+                var uploads = Path.Combine(_appEnvironment.WebRootPath, "Uploads/Screenshots/");
+                string filename = uploads + id + ".zip";
+                WebClient webClient = new WebClient();
+                webClient.Headers.Add("Authorization: Bearer VaultApi");
+                webClient.DownloadFile(new Uri(CuckooHost + "/tasks/screenshots/" + id), filename);
+
+                ZipFile.ExtractToDirectory(filename, uploads+id);
+                System.IO.File.Delete(filename);
+
+                var files = Directory.GetFiles(uploads + id);
+
+                progress = 84;
+                status = "Guardando Imagenes...";
+                foreach (var img in files)
+                {
+
+                    CORE.ScreenShot screenShot = new CORE.ScreenShot
+                    {
+                        Malware_Id = malwareId,
+                        PathFile = img
+                    };
+
+                    screenShotManager.Add(screenShot);
+                }
+                screenShotManager.Context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _log.WriteError(ex.Message, ex);
+                Redirect("Index");//guardamos el log si se produce una excepcion
+            }
+        }
+
+        public async Task StartThreatCrowdAnalysisAsync(int id, string md5)
+        {
+            try
+            {
+                //creamos nuevo cliente http
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri(CuckooHost);
+                client.DefaultRequestHeaders.Clear();
+
+
+                //cremos un unevo request en modo POST
+                var request = new HttpRequestMessage(new HttpMethod("GET"), "https://www.threatcrowd.org/searchApi/v2/file/report/?resource=" + md5);
+
+                //mandamos la solictud y recibimos la resuesta
+                var response = await client.SendAsync(request);
+
+                //si la respuesta e spositiva Codigo 200
+                if (response.IsSuccessStatusCode)
+                {
+                    //recogemos la respuesta
+                    HttpContent content = response.Content;
+                    await content.ReadAsStringAsync();
+                    //leemos el resultado y lo pasamos a string
+                    var result = content.ReadAsStringAsync();
+                    string res = result.Result;
+                    // del resultado obtenido en string lo pasamos a json y obtenimos el id de la tarea
+                    dynamic data = JObject.Parse(res);
+                    //registramos la busqueda de threat crowd
+                    CORE.ThreatCrowd.ThreatCrowdInfo threatCrowdInfo = new CORE.ThreatCrowd.ThreatCrowdInfo
+                    {
+                        Malware_Id = id,
+                        Type = "File",
+                        Permalink = data.permalink
+                    };
+
+                    threatCrowdInfoManager.Add(threatCrowdInfo);
+                    threatCrowdInfoManager.Context.SaveChanges();
+                    //guardamos los scans obtenidos
+                    foreach(var scan in data.scans)
+                    {
+                        CORE.ThreatCrowd.TCScans scans = new CORE.ThreatCrowd.TCScans
+                        {
+                            ThreatCrowd_Id = threatCrowdInfo.Id,
+                            Scan = scan
+                        };
+
+                        tCScansManager.Add(scans);
+                    }
+
+                    tCScansManager.Context.SaveChanges();
+                    //guardamos todos los posibles ips que se hayan podido obtener
+                    foreach (var ip in data.ips)
+                    {
+                        CORE.ThreatCrowd.TCIps tCIps = new CORE.ThreatCrowd.TCIps
+                        {
+                            ThreatCrowd_Id = threatCrowdInfo.Id,
+                            Ip = ip
+                        };
+
+                        tCIpsManager.Add(tCIps);
+                    }
+
+                    tCIpsManager.Context.SaveChanges();
+
+                    //guardamos todos lo posibles dominios detectados
+                    foreach (var domain in data.domains)
+                    {
+                        CORE.ThreatCrowd.TCDomains tCDomains = new CORE.ThreatCrowd.TCDomains
+                        {
+                            ThreatCrowd_Id = threatCrowdInfo.Id,
+                            Domain = domain
+                        };
+
+                        tCDomainsManager.Add(tCDomains);
+                    }
+
+                    tCDomainsManager.Context.SaveChanges();
+
+                    //guardamos las referencias si se han obtenido
+                    foreach(var reference in data.references)
+                    {
+                        CORE.ThreatCrowd.TCReferences tCReferences = new CORE.ThreatCrowd.TCReferences
+                        {
+                            ThreatCrowd_Id = threatCrowdInfo.Id,
+                            Reference = reference
+                        };
+                        tCReferencesManager.Add(tCReferences);
+                    }
+
+                    tCReferencesManager.Context.SaveChanges();
+
+                }
+                else
+                {
+                    Console.WriteLine("{0} ({1}) {2}", (int)response.StatusCode, response.ReasonPhrase, response.RequestMessage);
+                    Redirect("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _log.WriteError(ex.Message, ex);
+                Redirect("Index");//guardamos el log si se produce una excepcion
+            }
+
+        }
 
         /// <summary>
         /// Metodo que obtiene el estado del analisis del archivo o url

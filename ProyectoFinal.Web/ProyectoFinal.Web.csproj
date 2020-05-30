@@ -26,6 +26,7 @@
     <Folder Include="Areas\Admin\Views\Home\" />
     <Folder Include="wwwroot\Uploads\" />
     <Folder Include="wwwroot\Uploads\Malware\" />
+    <Folder Include="wwwroot\Uploads\Screenshots\" />
   </ItemGroup>
 
   <ItemGroup>

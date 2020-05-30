@@ -12,7 +12,6 @@ namespace ProyectoFinal.CORE.Contracts
     {
 
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<File> Files { get; set; }
         public DbSet<Malware> Malwares { get; set; }
         public DbSet<ScreenShot> ScreenShots { get; set; }
         public DbSet<VirusTotalInfo> VirusTotalInfos { get; set; }

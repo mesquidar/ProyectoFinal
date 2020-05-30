@@ -13,5 +13,6 @@
   <ItemGroup>
     <Folder Include="Contracts\VirusTotal\" />
     <Folder Include="Contracts\Cuckoo\" />
+    <Folder Include="Contracts\ThreatCrowd\" />
   </ItemGroup>
 </Project>
