@@ -5,5 +5,6 @@ namespace ProyectoFinal.CORE.Contracts.ThreatCrowd
 {
     public interface IThreatCrowdInfoManager: IGenericManager<ThreatCrowdInfo>
     {
+        ThreatCrowdInfo GetByMalwareId(int id);
     }
 }

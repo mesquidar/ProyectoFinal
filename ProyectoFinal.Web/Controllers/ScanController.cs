@@ -294,10 +294,9 @@ namespace ProyectoFinal.Web.Controllers
                 //obtenemos el malware a analizar
                 var malware = malwareManager.GetById(id);
                 //lanzamos el metodo que empezara el analisis de virustotal
-                //await StartVirusTotalFileAsync(malware);
+                await StartVirusTotalFileAsync(malware);
                 //lanzamos el metodo que empezara el analisis de cuckoo
-                //int cuckooId = await StartCuckooAnalysis(malware);
-                int cuckooId = 0;
+                int cuckooId = await StartCuckooAnalysis(malware);
                 //lanzamos metodo que obtendra el informe del analisis realizado si el id de cuckoo es diferente 0
                 if (cuckooId != 0)
                 {
@@ -305,9 +304,15 @@ namespace ProyectoFinal.Web.Controllers
                     //lanzamos metodo que guardara el report en base de datos
                     await SaveCuckooReport(report, malware);
                 }
-                //await GetScreenShotsAsync(14,malware.Id);
+                //lanzamos metodo que obtiene los screenshots realizados por cuckoo
+                await GetScreenShotsAsync(14,malware.Id);
+                //metodo que empieza el analisis de threatcrowd
                 await StartThreatCrowdAnalysisAsync(malware.Id, malware.MD5);
-                return null;
+                //metoso que actualiza el estado del malware
+                UpdateMalware(malware);
+                await Task.Delay(3000);
+                
+                return RedirectToAction("Index", "Malware", new { id = malware.MD5 });
             }
             catch (Exception ex)
             {
@@ -329,8 +334,6 @@ namespace ProyectoFinal.Web.Controllers
                 // creamos una nueva instanca de virustotal pasandole la API obtenida
                 VirusTotal virusTotal = new VirusTotal("8dfa583388406b434fd2c2fb3882f20283bbc8f2c3fb9ef73be09ca4b3f8d2ab");
 
-                
-
                 progress = 5;
                 //Usamos HTTPS en vez de HTTP normal
                 virusTotal.UseTLS = true;
@@ -338,8 +341,6 @@ namespace ProyectoFinal.Web.Controllers
                 status = "Leyendo archivo...";
                 //Pasamos el archivo a bytes dentro de una array de bytes
                 byte[] file = System.IO.File.ReadAllBytes(malware.FilePath);
-
-
 
                 status = "Verificando archivo en VirusTotal...";
                 progress = 10;
@@ -1218,7 +1219,8 @@ namespace ProyectoFinal.Web.Controllers
 
                 //mandamos la solictud y recibimos la resuesta
                 var response = await client.SendAsync(request);
-
+                progress = 86;
+                status = "Obteniendo Información desde ThreatCrwod...";
                 //si la respuesta e spositiva Codigo 200
                 if (response.IsSuccessStatusCode)
                 {
@@ -1228,6 +1230,10 @@ namespace ProyectoFinal.Web.Controllers
                     //leemos el resultado y lo pasamos a string
                     var result = content.ReadAsStringAsync();
                     string res = result.Result;
+
+                    progress = 88;
+                    status = "Guardando Información desde ThreatCrwod...";
+
                     // del resultado obtenido en string lo pasamos a json y obtenimos el id de la tarea
                     dynamic data = JObject.Parse(res);
                     //registramos la busqueda de threat crowd
@@ -1251,6 +1257,8 @@ namespace ProyectoFinal.Web.Controllers
 
                         tCScansManager.Add(scans);
                     }
+
+                    progress = 90;
 
                     tCScansManager.Context.SaveChanges();
                     //guardamos todos los posibles ips que se hayan podido obtener
@@ -1308,6 +1316,63 @@ namespace ProyectoFinal.Web.Controllers
                 Redirect("Index");//guardamos el log si se produce una excepcion
             }
 
+        }
+
+        /// <summary>
+        /// Metodo que actualiza la info de Malware 
+        /// </summary>
+        /// <param name="malware"></param>
+        public void UpdateMalware(Malware malware)
+        {
+            try
+            {
+                progress = 100;
+                status = "Actualizando Registros...";
+                var cuckooInfo = cuckooInfoManager.GetByMalwareId(malware.Id);
+                var virustotal = vtManager.GetByMalwareId(malware.Id);
+
+                if (cuckooInfo != null && virustotal != null)
+                {
+
+                    var notaVt = virustotal.Positives * virustotal.Total / 100;
+
+                    var notaFinal = notaVt + cuckooInfo.Score / 2;
+
+
+                    if (notaFinal < 2)
+                    {
+                        malware.MalwareLevel = Level.Sin_Detecciones;
+                        malware.MalwareStatus = Status.Finalizado;
+                        malwareManager.Context.SaveChanges();
+                    }
+                    if(notaFinal > 2 && notaFinal < 5 )
+                    {
+                        malware.MalwareLevel = Level.Indeterminado;
+                        malware.MalwareStatus = Status.Finalizado;
+                        malwareManager.Context.SaveChanges();
+
+                    }
+                    if (notaFinal > 5 && notaFinal < 7)
+                    {
+                        malware.MalwareLevel = Level.Sospechoso;
+                        malware.MalwareStatus = Status.Finalizado;
+                        malwareManager.Context.SaveChanges();
+                    }
+                    if (notaFinal > 7 && notaFinal < 10)
+                    {
+                        malware.MalwareLevel = Level.Malicioso;
+                        malware.MalwareStatus = Status.Finalizado;
+                        malwareManager.Context.SaveChanges();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _log.WriteError(ex.Message, ex);
+                Redirect("Index");//guardamos el log si se produce una excepcion
+            }
         }
 
         /// <summary>
