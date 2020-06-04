@@ -1,0 +1,21 @@
+﻿@model AnalysisIndexViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ProyectoFinal.CORE.ApplicationUser> SignInManager
+@inject UserManager<ProyectoFinal.CORE.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Analysis";
+}
+
+<partial name="_Info" model="Model.Malware"/>
+
+<br />
+<partial name="_Images" model="Model.Screenshots" />
+
+<br />
+<partial name="_Result" model="Model.Result" />
+
+<br />
+<partial name="_Comments" model="Model.Comments"/>
+
+

@@ -3,40 +3,41 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-    <ul class="navbar-nav">
-        @if (SignInManager.IsSignedIn(User))
-        {
+<ul class="navbar-nav">
 
-            <li class="nav-item avatar dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user fa-2x rounded-circle z-depth-0"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
-                     aria-labelledby="navbarDropdownMenuLink-55">
-                    <div align="center">
-                        <label>Hola @User.Identity.Name!</label>
-                        <hr />
-                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Mi Cuenta</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                        <hr />
-                        <form class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                            <button type="submit" class="nav-link btn btn-danger">Cerrar Sesión</button>
-                        </form>
-                    </div>
-                    </div>
-            </li>
+    @if (SignInManager.IsSignedIn(User))
+    {
 
-        }
-        else
-        {
+        <li class="nav-item avatar dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user fa-2x rounded-circle z-depth-0"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
+                 aria-labelledby="navbarDropdownMenuLink-55">
+                <div align="center">
+                    <label>Hola @User.Identity.Name!</label>
+                    <hr />
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Mi Cuenta</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                    <hr />
+                    <form class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-danger">Cerrar Sesión</button>
+                    </form>
+                </div>
+            </div>
+        </li>
 
-            <li class="nav-item">
-                <a class="nav-link text-light border border-light rounded" asp-area="Identity" asp-page="/Account/Register">Registrate</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Iniciar Sesión</a>
-            </li>
-        }
-    </ul>
+    }
+    else
+    {
+
+        <li class="nav-item">
+            <a class="nav-link text-light border border-light rounded" asp-area="Identity" asp-page="/Account/Register">Registrate</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Iniciar Sesión</a>
+        </li>
+    }
+</ul>

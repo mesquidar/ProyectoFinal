@@ -1,0 +1,180 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ProyectoFinal.CORE.ApplicationUser> SignInManager
+@inject UserManager<ProyectoFinal.CORE.ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "ThreatCrowd";
+}
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <h1>Prueba</h1>
+    <hr />
+    <div class="row">
+
+
+        <div class="col-md-8">
+            <div class="row">
+                <b>Nombre del Analisis:&nbsp; </b>
+                sdgfdfgdfg
+            </div>
+            <div class="row">
+                <b>Nombre del Archivo:&nbsp; </b>
+                sdgfdfgdfg
+            </div>
+
+            <div class="row">
+                <b>Fecha del Analisis:&nbsp; </b>
+                sdgfdfgdfg
+            </div>
+
+            <div class="row">
+                <b>Nombre del Archivo:&nbsp; </b>
+                sdgfdfgdfg
+            </div>
+            <div class="row">
+                <b>MD5:&nbsp; </b>
+                sdgfdfgdfg
+            </div>
+            <div class="row">
+                <b>SHA256:&nbsp;</b>
+                sdgfdfgdfg
+            </div>
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="row">
+                <h3><span class="badge badge-pill badge-danger" align="right">Malicioso</span></h3>
+            </div>
+
+            <div class="row">
+                <i class="fab fa-facebook-square fa-fw blue-text fa-2x" aria-hidden="true"></i>
+                <i class="fab fa-linkedin fa-fw blue-text fa-2x" aria-hidden="true"></i>
+                <i class="fab fa-twitter-square fa-fw blue-text fa-2x" aria-hidden="true"></i>
+                <i class="fas fa-envelope-square fa-fw red-text fa-2x" aria-hidden="true"></i>
+            </div>
+
+
+        </div>
+    </div>
+
+    <br />
+
+    <h2>Resultados ThreatCrowd</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Link ThreatCrowd:&nbsp;</h4>
+            <a href="">vfdghbfdghfdghfgh</a>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-3">
+
+            <!--Table-->
+            <table id="tcResults" class="table table-bordered table-hover">
+                <!--Table head-->
+                <thead class="elegant-color white-text">
+                    <tr>
+                        <th>#</th>
+                        <th>Resultado Escaneos</th>
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                </tbody>
+                <!--Table body-->
+            </table>
+            <!--Table-->
+
+        </div>
+
+        <div class="col-md-3">
+            <div class='table-responsive'>
+                <!--Table-->
+                <table id="tcResults" class="table table-bordered table-hover">
+                    <!--Table head-->
+                    <thead class="elegant-color white-text">
+                        <tr>
+                            <th>#</th>
+                            <th>Resultado IPs</th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table-->
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class='table-responsive'>
+                <!--Table-->
+                <table id="tcResults" class="table table-bordered table-hover">
+                    <!--Table head-->
+                    <thead class="elegant-color white-text">
+                        <tr>
+                            <th>#</th>
+                            <th>Resultado Dominios</th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table-->
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class='table-responsive'>
+                <!--Table-->
+                <table id="tcResults" class="table table-bordered table-hover">
+                    <!--Table head-->
+                    <thead class="elegant-color white-text">
+                        <tr>
+                            <th>#</th>
+                            <th>Resultado Referencias</th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table-->
+            </div>
+        </div>
+
+    </div>
+
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        No tiene permiso para visualizar esta página
+    </div>
+}
+

@@ -101,6 +101,7 @@ namespace ProyectoFinal.Web
             services.AddScoped<ITCSubdomainsManager, TCSubdomainsManager>();
             services.AddScoped<IThreatCrowdInfoManager, ThreatCrowdInfoManager>();
             services.AddScoped<ITCResolutionManager, TCResolutionManager>();
+            services.AddScoped<ICommentManager, CommentManager>();
 
         }
 

@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="VirusTotalNet" Version="2.0.0" />
+    <PackageReference Include="ekko-lightbox" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,8 @@
     <Folder Include="wwwroot\Uploads\" />
     <Folder Include="wwwroot\Uploads\Malware\" />
     <Folder Include="wwwroot\Uploads\Screenshots\" />
+    <Folder Include="Views\Analysis\" />
+    <Folder Include="Views\Malware\" />
   </ItemGroup>
 
   <ItemGroup>
