@@ -1,115 +1,71 @@
-﻿
+﻿@model ProyectoFinal.Web.Areas.Admin.Models.AdminPanelViewModel
 @{
     ViewBag.Title = "Panel de Administración";
 }
-    <div class="row row-cols-1 row-cols-md-3">
-        <div class="col mb-4">
-            <div class="card h-100">
-                <!--Card image-->
-                <div class="view overlay">
-                    <img class="card-img-top" src="~/img/usuarios.jpg"
-                         alt="usuarios" width="350" height="230">
-                    <a href="#!">
-                        <div class="mask rgba-white-slight"></div>
-                    </a>
-                </div>
-                <hr/>
-                <!--Card content-->
-                <div class="card-body">
-                    <div align="center">
-                        <!--Title-->
-                        <h4 class="card-title">Usuarios</h4>
-                        <p class="card-text">
-                            Realice la gestión de los usuarios desde aquí
-                        </p>
-                        <!--Text-->
-                        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-                        <a href="~/Admin/User/" class="btn btn-primary">Acceder</a>
-</div>
-                </div>
-
-            </div>
-            <!-- Card -->
+    <link rel="stylesheet" href="~/css/custom.css" />
+<h2>Panel de Administracion</h2>
+<hr />
+<div class="main-section">
+    <div class="dashbord dashbord-blue">
+        <div class="icon-section">
+            <i class="fa fa-users" aria-hidden="true"></i><br>
+            <small>Usuarios</small>
+            <p>@Model.User.Count()</p>
         </div>
-        <div class="col mb-4">
-            <div class="card h-100">
-                <!--Card image-->
-                <div class="view overlay">
-                    <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/16.jpg" alt="Card image cap">
-                    <a href="#!">
-                        <div class="mask rgba-white-slight"></div>
-                    </a>
-                </div>
-
-                <!--Card content-->
-                <div class="card-body">
-                    <div align="center">
-                        <!--Title-->
-                        <h4 class="card-title">Muestras</h4>
-                        <!--Text-->
-                        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-                        <button type="button" class="btn btn-primary btn-md">Acceder</button>
-                    </div>
-                </div>
-
-            </div>
-            <!-- Card -->
-        </div>
-        <div class="col mb-4">
-            <div class="card h-100">
-                <!--Card image-->
-                <div class="view overlay">
-                    <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/16.jpg" alt="Card image cap">
-                    <a href="#!">
-                        <div class="mask rgba-white-slight"></div>
-                    </a>
-                </div>
-
-                <!--Card content-->
-                <div class="card-body">
-
-                    <!--Title-->
-                    <h4 class="card-title">Card title</h4>
-                    <!--Text-->
-                    <p class="card-text">
-                        Some quick example text to build on the card title and make up the bulk of the
-                        card's content. Some quick example text to build on the card title and make up the bulk of the
-                        card's content.
-                    </p>
-                    <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-                    <button type="button" class="btn btn-light-blue btn-md">Read more</button>
-
-                </div>
-
-            </div>
-            <!-- Card -->
-        </div>
-        <div class="col mb-4">
-            <div class="card h-100">
-                <!--Card image-->
-                <div class="view overlay">
-                    <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/16.jpg" alt="Card image cap">
-                    <a href="#!">
-                        <div class="mask rgba-white-slight"></div>
-                    </a>
-                </div>
-
-                <!--Card content-->
-                <div class="card-body">
-
-                    <!--Title-->
-                    <h4 class="card-title">Card title</h4>
-                    <!--Text-->
-                    <p class="card-text">
-                        Some quick example text to build on the card title and make up the bulk of the
-                        card's content.
-                    </p>
-                    <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-                    <button type="button" class="btn btn-light-blue btn-md">Read more</button>
-
-                </div>
-
-            </div>
-            <!-- Card -->
+        <div class="detail-section">
+            <a href="/Admin/User">Ver Detalles</a>
         </div>
     </div>
+    <div class="dashbord">
+        <div class="icon-section">
+            <i class="fas fa-bug" aria-hidden="true"></i><br>
+            <small>Malware</small>
+            <p>@Model.Malware.Count()</p>
+    </div>
+        <div class="detail-section">
+            <a href="/Admin/Malware">Ver Detalles</a>
+        </div>
+    </div>
+    <div class="dashbord dashbord-orange">
+        <div class="icon-section">
+            <i class="fa fa-comment" aria-hidden="true"></i><br>
+            <small>Comentarios</small>
+            <p>@Model.Comment.Count()</p>
+        </div>
+        <div class="detail-section">
+            <a href="/Admin/Comment">Ver Detalles</a>
+        </div>
+    </div>
+    <div class="dashbord dashbord-green">
+        <div class="icon-section">
+            <i class="fas fa-images" aria-hidden="true"></i><br>
+            <small>Imagenes</small>
+            <p>@Model.ScreenShot.Count()</p>
+        </div>
+        <div class="detail-section">
+            <a href="/Admin/ScreenShot">Ver Detalles</a>
+        </div>
+    </div>
+
+    <div class="dashbord dashbord-skyblue">
+        <div class="icon-section">
+            <i class="fa fa-copy" aria-hidden="true"></i><br>
+            <small>Logs</small>
+            <p>2</p>
+        </div>
+        <div class="detail-section">
+            <a href="/Admin/Log">Ver Detalles</a>
+        </div>
+    </div>
+
+    <div class="dashbord dashbord-red">
+        <div class="icon-section">
+            <i class="fa fa-tasks" aria-hidden="true"></i><br>
+            <small>Opciones</small>
+            <p>8</p>
+        </div>
+        <div class="detail-section">
+            <a href="/Admin/Settings">Ver Detalles</a>
+        </div>
+    </div>
+</div>

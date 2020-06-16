@@ -6,30 +6,40 @@
 }
 
 <h2>Usuarios</h2>
+<hr />
 @{
     if (TempData["borrado"] != null)
     {
-        <div class="alert alert-success" role="alert">
-            @Html.Encode(TempData["borrado"])
-        </div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Html.Encode(TempData["borrado"])
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     }
 
     if (TempData["creado"] != null)
     {
-        <div class="alert alert-success" role="alert">
-            @Html.Encode(TempData["creado"])
-        </div>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    @Html.Encode(TempData["creado"])
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
     }
 
     if (TempData["editado"] != null)
     {
-        <div class="alert alert-success" role="alert">
-            @Html.Encode(TempData["editado"])
-        </div>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    @Html.Encode(TempData["editado"])
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
     }
 }
-<table id="impuestos" class="table table-bordered table-hover table-striped">
-    <thead class="thead-dark">
+<table id="users" class="table table-bordered table-hover table-striped">
+    <thead class="elegant-color white-text">
         <tr>
             <th>Id</th>
             <th>Usuario</th>
@@ -54,14 +64,16 @@
                 @Html.DisplayFor(modelItem => item.PhoneNumber)
             </td>
             <td>
-                @Html.ActionLink("Editar", "Edit", new { id = item.Id }, new { @class = "btn btn-warning" }) |
-                @Html.ActionLink("Eliminar", "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })
+
+                @Html.ActionLink("Editar", "Edit", "User", new { area = "Admin", id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+                |
+                @Html.ActionLink("Eliminar", "Delete", "User", new { area = "Admin", id = item.Id }, new { @class = "btn btn-danger btn-sm" })
             </td>
         </tr>
     }
 </table>
 <script>
     $(document).ready(function () {
-        $('#impuestos').DataTable();
+        $('#users').DataTable();
     });
 </script>

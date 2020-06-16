@@ -7,15 +7,31 @@
     ViewData["Title"] = "Analysis";
 }
 
-<partial name="_Info" model="Model.Malware"/>
+    @if (TempData["exist"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["exist"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+<partial name="_Info" model="@Model.Malware" />
 
 <br />
-<partial name="_Images" model="Model.Screenshots" />
+<partial name="_Images" model="@Model.Screenshots" />
 
 <br />
-<partial name="_Result" model="Model.Result" />
+<h2>Resultados</h2>
+<hr />
+<div class="row">
+    <partial name="_VTInfo" model="@Model.VTInfo" />
+    <partial name="_CuckooChart" model="@Model.CuckooInfo" />
+    <partial name="_TCChart" model="@Model.TCInfo" />
+</div>
 
 <br />
-<partial name="_Comments" model="Model.Comments"/>
+<partial name="_Comments" model="@Model.Comments" />
 
 

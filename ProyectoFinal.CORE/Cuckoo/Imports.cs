@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -9,17 +10,20 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// id de imports
         /// </summary>
-        public int id { get; set; }
-
-        /// <summary>
-        /// id asociado a peimport
-        /// </summary>
-        public int PeImport_Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// peimport asociado
         /// </summary>
         public virtual PeImport PeImport { get; set; }
+
+        /// <summary>
+        /// id asociado a peimport
+        /// </summary>
+        [ForeignKey("PeImport")]
+        public int PeImport_Id { get; set; }
+
+
 
         /// <summary>
         /// direccion 

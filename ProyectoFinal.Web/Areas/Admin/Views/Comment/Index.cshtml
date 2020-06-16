@@ -1,0 +1,83 @@
+﻿@model IEnumerable<ProyectoFinal.CORE.Comment>
+
+@{
+    ViewBag.Title = "Admin Comentarios";
+}
+
+<h2>Comentarios</h2>
+<hr />
+@{
+    if (TempData["borrado"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["borrado"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    if (TempData["creado"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["creado"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    if (TempData["editado"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["editado"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+}
+<div class="row">
+    <div class="col-md-12">
+        <!--Table-->
+        <table id="commentResults" class="table table-bordered table-hover" width="100%">
+            <!--Table head-->
+            <thead class="elegant-color white-text">
+                <tr>
+                    <th>Malware</th>
+                    <th>Usuario</th>
+                    <th>Comentario</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <!--Table head-->
+            <!--Table body-->
+            <tbody>
+
+                @foreach (var comment in Model)
+                {
+                    <tr>
+                        <td>@comment.Malware.FileName</td>
+                        <td>@comment.User.UserName</td>
+                        <td>@comment.TextComment</td>
+                        <td>
+                            <a href="/Analysis/Index/@comment.Malware.MD5" class="btn btn-primary btn-sm">Ver</a>
+                            |
+                            @Html.ActionLink("Editar", "Edit", "Comment", new { area = "Admin", id = comment.Id }, new { @class = "btn btn-warning btn-sm" })
+                            |
+                            @Html.ActionLink("Eliminar", "Delete", "Comment", new { area = "Admin", id = comment.Id }, new { @class = "btn btn-danger btn-sm" })
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+            <!--Table body-->
+        </table>
+        <!--Table-->
+
+    </div>
+
+</div>
+<script>$(document).ready(function () {
+        $('#commentResults').DataTable();
+    });</script>

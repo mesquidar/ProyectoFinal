@@ -9,15 +9,17 @@
 
             @foreach (var image in Model)
             {
-                <a href="/@image.PathFile" data-toggle="lightbox" data-gallery="example-gallery" class="col-sm-4">
-                    <img href="/@image.PathFile" class="img-fluid">
+                <a href="@image.PathFile" data-toggle="lightbox" data-gallery="example-gallery" class="col-sm-4">
+                    <img src="@image.PathFile" class="img-fluid">
                 </a>
             }
         </div>
     </div>
 </div>
 
-<script>$(document).on('click', '[data-toggle="lightbox"]', function (event) {
+<script>
+    $(document).on('click', '[data-toggle="lightbox"]', function (event) {
         event.preventDefault();
         $(this).ekkoLightbox();
-    });</script>
+});
+</script>

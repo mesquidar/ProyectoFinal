@@ -1,0 +1,89 @@
+﻿@model IEnumerable<ProyectoFinal.CORE.ScreenShot>
+
+@{
+    ViewBag.Title = "Admin Imagenes";
+}
+    <script src="~/js/addons/ekko-lightbox.min.js"></script>
+<h2>Imagenes</h2>
+<hr />
+@{
+    if (TempData["borrado"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["borrado"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    if (TempData["creado"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["creado"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    if (TempData["editado"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @Html.Encode(TempData["editado"])
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+}
+<div class="row">
+    <div class="col-md-12">
+        <!--Table-->
+        <table id="malwareResults" class="table table-bordered table-hover" width="100%">
+            <!--Table head-->
+            <thead class="elegant-color white-text">
+                <tr>
+                    <th>Malware</th>
+                    <th>Imagen</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <!--Table head-->
+            <!--Table body-->
+            <tbody>
+
+                @foreach (var img in Model)
+                {
+                    <tr>
+                        <td>@img.Malware.FileName</td>
+                        <td>
+                            <a href="@img.PathFile" data-toggle="lightbox" data-gallery="example-gallery" class="col-sm-4">
+                                <img src="@img.PathFile" class="img-fluid" height="200" width="200">
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/Analysis/Index/@img.Malware.MD5" class="btn btn-primary btn-sm">Ver</a>
+                            |
+                            @Html.ActionLink("Editar", "Edit", "ScreenShot", new { area = "Admin", id = img.Id }, new { @class = "btn btn-warning btn-sm" })
+                            |
+                            @Html.ActionLink("Eliminar", "Delete", "ScreenShot", new { area = "Admin", id = img.Id }, new { @class = "btn btn-danger btn-sm" })
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+            <!--Table body-->
+        </table>
+        <!--Table-->
+
+    </div>
+
+</div>
+<script>$(document).ready(function () {
+        $('#malwareResults').DataTable();
+    });</script>
+<script>$(document).on('click', '[data-toggle="lightbox"]', function (event) {
+        event.preventDefault();
+        $(this).ekkoLightbox();
+    });</script>

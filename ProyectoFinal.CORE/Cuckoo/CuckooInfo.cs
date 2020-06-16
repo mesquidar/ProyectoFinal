@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Threading.Tasks.Sources;
 
@@ -18,14 +19,20 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int CuckooScanId { get; set; }
 
         /// <summary>
-        /// Id del malware asociado
+        /// MD5 del malware asociado∫
         /// </summary>
-        public int Malware_Id { get; set; }
+        public string MD5 { get; set; }
 
         /// <summary>
         /// Malware asociado
         /// </summary>
         public virtual Malware Malware { get; set; }
+
+        /// <summary>
+        /// Id del malware asociado
+        /// </summary>
+        [ForeignKey("ThreatCrowdInfo")]
+        public int Malware_Id { get; set; }
 
         /// <summary>
         /// Categoria de cuckoo

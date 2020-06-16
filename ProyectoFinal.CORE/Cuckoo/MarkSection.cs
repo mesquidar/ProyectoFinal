@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int id { get; set; }
 
         /// <summary>
-        /// id de mark asociado
-        /// </summary>
-        public int Mark_Id { get; set; }
-
-        /// <summary>
         /// mark asociado
         /// </summary>
         public virtual Mark Mark { get; set; }
+
+        /// <summary>
+        /// id de mark asociado
+        /// </summary>
+        [ForeignKey("Mark")]
+        public int Mark_Id { get; set; }
 
         /// <summary>
         /// entropia

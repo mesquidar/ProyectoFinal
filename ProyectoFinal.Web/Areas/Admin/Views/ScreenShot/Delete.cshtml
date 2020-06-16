@@ -1,0 +1,49 @@
+﻿@model ProyectoFinal.CORE.ScreenShot
+
+@{
+    ViewBag.Title = "Eliminar Imagen";
+}
+    <script src="~/js/addons/ekko-lightbox.min.js"></script>
+<h2>Eliminar Malware</h2>
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            Id:
+        </dt>
+        <dd>
+            @Html.DisplayFor(Model => Model.Id)
+        </dd>
+        <dt>
+            Malware:
+        </dt>
+        <dd>
+            @Html.DisplayFor(Model => Model.Malware.FileName)
+        </dd>
+        <dt>
+            Imagen:
+        </dt>
+        <dd>
+            <a href="@Model.PathFile" data-toggle="lightbox" data-gallery="example-gallery" class="col-sm-4">
+                <img src="@Model.PathFile" class="img-fluid" height="200" width="200">
+            </a>
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+            @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-primary" })
+        </div>
+    }
+</div>
+
+<script>
+$(document).on('click', '[data-toggle="lightbox"]', function (event) {
+        event.preventDefault();
+        $(this).ekkoLightbox();
+});
+</script>

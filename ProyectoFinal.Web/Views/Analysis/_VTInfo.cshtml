@@ -1,0 +1,48 @@
+﻿@model ProyectoFinal.CORE.VirusTotal.VirusTotalInfo
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ProyectoFinal.CORE.ApplicationUser> SignInManager
+@inject UserManager<ProyectoFinal.CORE.ApplicationUser> UserManager
+<script src="~/js/addons/Chart.bundle.min.js"></script>
+
+<div class="col-md-4">
+    <div class="card">
+        <h4 class="card-header elegant-color white-text text-center py-4">VirusTotal</h4>
+        <div class="card-body px-lg-5 pt-0">
+            <div align="center">
+                <canvas id="vtChart" width="450" height="400"></canvas>
+                <br />
+                <h4>Positivos:</h4><span class="badge badge-pill badge-primary" align="right">@Model.Positives</span>
+                <h4>Total:</h4><span class="badge badge-pill badge-primary" align="right">@Model.Total</span>
+                <br />
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a href="@(Url.Action("VirusTotal", "Analysis", new { id = @Model.MD5}))" class="btn btn-info">Ver Detalles</a>
+                }
+                else
+                {
+                    <span class="badge badge-pill badge-info">Para ver más detalles inicie sesión</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var ctxD = document.getElementById("vtChart").getContext('2d');
+    var myLineChart = new Chart(ctxD, {
+        type: 'doughnut',
+        data: {
+            labels: ["Positivos", "Total"],
+            datasets: [{
+                data: [@Model.Positives, @Model.Total],
+                backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+                hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+    

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int id { get; set; }
 
         /// <summary>
-        /// id de cuckoo static asociado
-        /// </summary>
-        public int Static_Id { get; set; }
-
-        /// <summary>
         /// cuckoo static asociado
         /// </summary>
         public virtual CuckooStatic CuckooStatic { get; set; }
+
+        /// <summary>
+        /// id de cuckoo static asociado
+        /// </summary>
+        [ForeignKey("CuckooStatic")]
+        public int Static_Id { get; set; }
 
         /// <summary>
         /// tipo de archivo

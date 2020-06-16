@@ -1,7 +1,40 @@
-
+@model ProyectoFinal.Web.Areas.Admin.Models.UserList
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Eliminar Usuario";
 }
 
-<h2>title</h2>
+<h2>Elimnar Usuario</h2>
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            Id
+        </dt>
+        <dd>
+            @Html.DisplayFor(Model => Model.Id)
+        </dd>
+        <dt>
+            Usuario
+        </dt>
+        <dd>
+            @Html.DisplayFor(Model => Model.UserName)
+        </dd>
+        <dt>
+            Email
+        </dt>
+        <dd>
+            @Html.DisplayFor(Model => Model.Email)
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+            @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-primary" })
+        </div>
+    }
+</div>

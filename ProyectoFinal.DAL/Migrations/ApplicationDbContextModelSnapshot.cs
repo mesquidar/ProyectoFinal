@@ -226,26 +226,20 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MalwareId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Malware_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("TextComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("User_Id")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MalwareId");
+                    b.HasIndex("Malware_Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User_Id");
 
                     b.ToTable("Comments");
                 });
@@ -260,9 +254,6 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<int>("Behavior_Id")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CuckooBehaviorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -271,7 +262,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooBehaviorId");
+                    b.HasIndex("Behavior_Id");
 
                     b.ToTable("BehaviorSummaries");
                 });
@@ -286,7 +277,7 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<int?>("CuckooInfoId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Cuckoo_Id")
+                    b.Property<int>("CuckooScan_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -303,10 +294,10 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckoInfoId")
+                    b.Property<int?>("CuckooScanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Cuckoo_Id")
+                    b.Property<int>("CuckooScan_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("FilePath")
@@ -329,7 +320,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckoInfoId");
+                    b.HasIndex("CuckooScanId");
 
                     b.ToTable("CuckooDroppeds");
                 });
@@ -346,6 +337,9 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.Property<int>("CuckooScanId")
                         .HasColumnType("int");
+
+                    b.Property<string>("MD5")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MalwareId")
                         .HasColumnType("int");
@@ -373,14 +367,14 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("CuckooScanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CuckooScan_Id")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MalwareId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Malware_Id")
-                        .HasColumnType("int");
 
                     b.Property<int>("Markcount")
                         .HasColumnType("int");
@@ -390,7 +384,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MalwareId");
+                    b.HasIndex("CuckooScanId");
 
                     b.ToTable("CuckooSignatures");
                 });
@@ -402,10 +396,10 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooInfoId")
+                    b.Property<int?>("CuckooScanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Cuckoo_Id")
+                    b.Property<int>("CuckooScan_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("ImportedDllCount")
@@ -419,9 +413,32 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooInfoId");
+                    b.HasIndex("CuckooScanId");
 
                     b.ToTable("CuckooStatics");
+                });
+
+            modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooStrings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CuckoScanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CuckooScan_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Strings")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CuckoScanId");
+
+                    b.ToTable("CuckooStrings");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooTarget", b =>
@@ -431,10 +448,10 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooInfoId")
+                    b.Property<int?>("CuckoScanId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Cuckoo_Id")
+                    b.Property<int>("CuckooScan_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("FilePath")
@@ -455,12 +472,6 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("YaraDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("YaraName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("crc32")
                         .HasColumnType("nvarchar(max)");
 
@@ -469,7 +480,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooInfoId");
+                    b.HasIndex("CuckoScanId");
 
                     b.ToTable("CuckooTargets");
                 });
@@ -481,9 +492,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooDroppedId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Dropped_Id")
                         .HasColumnType("int");
 
@@ -492,7 +500,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooDroppedId");
+                    b.HasIndex("Dropped_Id");
 
                     b.ToTable("DroppedPids");
                 });
@@ -522,7 +530,7 @@ namespace ProyectoFinal.DAL.Migrations
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.Exports", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -533,22 +541,19 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PeExportId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PeExport_Id")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
-                    b.HasIndex("PeExportId");
+                    b.HasIndex("PeExport_Id");
 
                     b.ToTable("Exports");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.Imports", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -559,15 +564,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PeImportId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PeImport_Id")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
-                    b.HasIndex("PeImportId");
+                    b.HasIndex("PeImport_Id");
 
                     b.ToTable("Imports");
                 });
@@ -583,9 +585,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Cid")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CuckooSignatureId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -605,7 +604,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooSignatureId");
+                    b.HasIndex("Siganture_Id");
 
                     b.ToTable("Marks");
                 });
@@ -637,9 +636,6 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.Property<long?>("Length")
                         .HasColumnType("bigint");
-
-                    b.Property<int?>("MarkCallId")
-                        .HasColumnType("int");
 
                     b.Property<int>("MarkCall_Id")
                         .HasColumnType("int");
@@ -676,7 +672,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MarkCallId");
+                    b.HasIndex("MarkCall_Id");
 
                     b.ToTable("MarkArguments");
                 });
@@ -694,9 +690,6 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MarkId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Mark_Id")
                         .HasColumnType("int");
 
@@ -705,7 +698,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MarkId");
+                    b.HasIndex("Mark_Id");
 
                     b.ToTable("MarkCalls");
                 });
@@ -719,9 +712,6 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.Property<long>("Entropy")
                         .HasColumnType("bigint");
-
-                    b.Property<int?>("MarkId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Mark_Id")
                         .HasColumnType("int");
@@ -740,7 +730,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("MarkId");
+                    b.HasIndex("Mark_Id");
 
                     b.ToTable("MarkSections");
                 });
@@ -752,9 +742,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooStaticId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CuckooStatic_Id")
                         .HasColumnType("int");
 
@@ -763,7 +750,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooStaticId");
+                    b.HasIndex("CuckooStatic_Id");
 
                     b.ToTable("PeExports");
                 });
@@ -775,9 +762,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooStaticId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CuckooStatic_Id")
                         .HasColumnType("int");
 
@@ -786,7 +770,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooStaticId");
+                    b.HasIndex("CuckooStatic_Id");
 
                     b.ToTable("PeImports");
                 });
@@ -797,9 +781,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CuckooStaticId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Filetype")
                         .HasColumnType("nvarchar(max)");
@@ -821,7 +802,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("CuckooStaticId");
+                    b.HasIndex("Static_Id");
 
                     b.ToTable("PeResources");
                 });
@@ -832,9 +813,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CuckooStaticId")
-                        .HasColumnType("int");
 
                     b.Property<double>("Entropy")
                         .HasColumnType("float");
@@ -856,7 +834,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooStaticId");
+                    b.HasIndex("Static_Id");
 
                     b.ToTable("PeSections");
                 });
@@ -873,9 +851,6 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.Property<string>("CommandLine")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CuckooBehaviorId")
-                        .HasColumnType("int");
 
                     b.Property<double>("FirstSeen")
                         .HasColumnType("float");
@@ -894,7 +869,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooBehaviorId");
+                    b.HasIndex("Behavior_Id");
 
                     b.ToTable("ProcessTrees");
                 });
@@ -906,9 +881,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooSignatureId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CuckooSignature_Id")
                         .HasColumnType("int");
 
@@ -917,7 +889,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooSignatureId");
+                    b.HasIndex("CuckooSignature_Id");
 
                     b.ToTable("SignatureReferences");
                 });
@@ -929,9 +901,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooStaticId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CuckooStatic_Id")
                         .HasColumnType("int");
 
@@ -940,7 +909,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooStaticId");
+                    b.HasIndex("CuckooStatic_Id");
 
                     b.ToTable("StaticKeys");
                 });
@@ -957,9 +926,6 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CuckooStaticId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -978,7 +944,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooStaticId");
+                    b.HasIndex("Static_Id");
 
                     b.ToTable("StaticSignatures");
                 });
@@ -990,9 +956,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooTargetId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Pid")
                         .HasColumnType("int");
 
@@ -1001,7 +964,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooTargetId");
+                    b.HasIndex("Target_Id");
 
                     b.ToTable("TargetPids");
                 });
@@ -1013,9 +976,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CuckooTargetId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Target_Id")
                         .HasColumnType("int");
 
@@ -1024,7 +984,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooTargetId");
+                    b.HasIndex("Target_Id");
 
                     b.ToTable("TargetUrls");
                 });
@@ -1035,9 +995,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CuckooDroppedId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -1053,38 +1010,9 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CuckooDroppedId");
+                    b.HasIndex("Dropped_Id");
 
                     b.ToTable("YaraDroppeds");
-                });
-
-            modelBuilder.Entity("ProyectoFinal.CORE.File", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("MalwareId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Malware_Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PathFile")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MalwareId");
-
-                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Malware", b =>
@@ -1121,15 +1049,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("User_Id")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User_Id");
 
                     b.ToTable("Malwares");
                 });
@@ -1141,21 +1066,15 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MalwareId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Malware_Id")
                         .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PathFile")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MalwareId");
+                    b.HasIndex("Malware_Id");
 
                     b.ToTable("ScreenShots");
                 });
@@ -1170,15 +1089,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Domain")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ThreatCrowdInfoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ThreatCrowd_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ThreatCrowdInfoId");
+                    b.HasIndex("ThreatCrowd_Id");
 
                     b.ToTable("TCDomains");
                 });
@@ -1193,15 +1109,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ThreatCrowdInfoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ThreatCrowd_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ThreatCrowdInfoId");
+                    b.HasIndex("ThreatCrowd_Id");
 
                     b.ToTable("TCEmails");
                 });
@@ -1239,15 +1152,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Ip")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ThreatCrowdInfoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ThreatCrowd_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ThreatCrowdInfoId");
+                    b.HasIndex("ThreatCrowd_Id");
 
                     b.ToTable("TCIps");
                 });
@@ -1262,15 +1172,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Reference")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ThreatCrowdInfoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ThreatCrowd_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ThreatCrowdInfoId");
+                    b.HasIndex("ThreatCrowd_Id");
 
                     b.ToTable("TCReferences");
                 });
@@ -1314,15 +1221,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Scan")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ThreatCrowdInfoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ThreatCrowd_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ThreatCrowdInfoId");
+                    b.HasIndex("ThreatCrowd_Id");
 
                     b.ToTable("TCScans");
                 });
@@ -1357,9 +1261,6 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MalwareId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Malware_Id")
                         .HasColumnType("int");
 
@@ -1374,7 +1275,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MalwareId");
+                    b.HasIndex("Malware_Id");
 
                     b.ToTable("ThreatCrowdInfo");
                 });
@@ -1412,8 +1313,8 @@ namespace ProyectoFinal.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MalwareId")
-                        .HasColumnType("int");
+                    b.Property<string>("MD5")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Malware_Id")
                         .HasColumnType("int");
@@ -1426,7 +1327,7 @@ namespace ProyectoFinal.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MalwareId");
+                    b.HasIndex("Malware_Id");
 
                     b.ToTable("VirusTotalInfos");
                 });
@@ -1450,15 +1351,12 @@ namespace ProyectoFinal.DAL.Migrations
                     b.Property<string>("Version")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("VirusTotalId")
-                        .HasColumnType("int");
-
                     b.Property<int>("VirusTotal_Id")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VirusTotalId");
+                    b.HasIndex("VirusTotal_Id");
 
                     b.ToTable("VirusTotalScans");
                 });
@@ -1518,18 +1416,22 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.Malware", "Malware")
                         .WithMany()
-                        .HasForeignKey("MalwareId");
+                        .HasForeignKey("Malware_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ProyectoFinal.CORE.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Comments")
+                        .HasForeignKey("User_Id");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.BehaviorSummary", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooBehavior", "CuckooBehavior")
                         .WithMany("Summary")
-                        .HasForeignKey("CuckooBehaviorId");
+                        .HasForeignKey("Behavior_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooBehavior", b =>
@@ -1543,7 +1445,7 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooInfo", "CuckoInfo")
                         .WithMany()
-                        .HasForeignKey("CuckoInfoId");
+                        .HasForeignKey("CuckooScanId");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooInfo", b =>
@@ -1555,30 +1457,39 @@ namespace ProyectoFinal.DAL.Migrations
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooSignature", b =>
                 {
-                    b.HasOne("ProyectoFinal.CORE.Malware", "Malware")
+                    b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooInfo", "CuckooInfo")
                         .WithMany()
-                        .HasForeignKey("MalwareId");
+                        .HasForeignKey("CuckooScanId");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooStatic", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooInfo", "CuckooInfo")
                         .WithMany()
-                        .HasForeignKey("CuckooInfoId");
+                        .HasForeignKey("CuckooScanId");
+                });
+
+            modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooStrings", b =>
+                {
+                    b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooInfo", "CuckooInfo")
+                        .WithMany()
+                        .HasForeignKey("CuckoScanId");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.CuckooTarget", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooInfo", "CuckooInfo")
                         .WithMany()
-                        .HasForeignKey("CuckooInfoId");
+                        .HasForeignKey("CuckoScanId");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.DroppedPids", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooDropped", "CuckooDropped")
                         .WithMany("Pids")
-                        .HasForeignKey("CuckooDroppedId");
+                        .HasForeignKey("Dropped_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.DroppedUrls", b =>
@@ -1592,154 +1503,187 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.PeExport", "PeExport")
                         .WithMany("Exports")
-                        .HasForeignKey("PeExportId");
+                        .HasForeignKey("PeExport_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.Imports", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.PeImport", "PeImport")
                         .WithMany("Imports")
-                        .HasForeignKey("PeImportId");
+                        .HasForeignKey("PeImport_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.Mark", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooSignature", "CuckooSignature")
                         .WithMany("Marks")
-                        .HasForeignKey("CuckooSignatureId");
+                        .HasForeignKey("Siganture_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.MarkArguments", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.MarkCall", "MarkCall")
                         .WithMany("Arguments")
-                        .HasForeignKey("MarkCallId");
+                        .HasForeignKey("MarkCall_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.MarkCall", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.Mark", "Mark")
                         .WithMany("Call")
-                        .HasForeignKey("MarkId");
+                        .HasForeignKey("Mark_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.MarkSection", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.Mark", "Mark")
                         .WithMany("MarkSection")
-                        .HasForeignKey("MarkId");
+                        .HasForeignKey("Mark_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.PeExport", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooStatic", "CuckooStatic")
                         .WithMany("PeExport")
-                        .HasForeignKey("CuckooStaticId");
+                        .HasForeignKey("CuckooStatic_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.PeImport", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooStatic", "CuckooStatic")
                         .WithMany("PeImports")
-                        .HasForeignKey("CuckooStaticId");
+                        .HasForeignKey("CuckooStatic_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.PeResource", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooStatic", "CuckooStatic")
                         .WithMany("PeResources")
-                        .HasForeignKey("CuckooStaticId");
+                        .HasForeignKey("Static_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.PeSection", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooStatic", "CuckooStatic")
                         .WithMany("PeSections")
-                        .HasForeignKey("CuckooStaticId");
+                        .HasForeignKey("Static_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.ProcessTree", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooBehavior", "CuckooBehavior")
                         .WithMany("Processtree")
-                        .HasForeignKey("CuckooBehaviorId");
+                        .HasForeignKey("Behavior_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.SignatureReferences", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooSignature", "CuckooSignature")
                         .WithMany("References")
-                        .HasForeignKey("CuckooSignatureId");
+                        .HasForeignKey("CuckooSignature_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.StaticKeys", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooStatic", "CuckooStatic")
                         .WithMany("Keys")
-                        .HasForeignKey("CuckooStaticId");
+                        .HasForeignKey("CuckooStatic_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.StaticSignature", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooStatic", "CuckooStatic")
                         .WithMany("Signatures")
-                        .HasForeignKey("CuckooStaticId");
+                        .HasForeignKey("Static_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.TargetPids", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooTarget", "CuckooTarget")
                         .WithMany("Pids")
-                        .HasForeignKey("CuckooTargetId");
+                        .HasForeignKey("Target_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.TargetUrls", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooTarget", "CuckooTarget")
                         .WithMany("Urls")
-                        .HasForeignKey("CuckooTargetId");
+                        .HasForeignKey("Target_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Cuckoo.YaraDropped", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Cuckoo.CuckooDropped", "CuckooDropped")
                         .WithMany("YaraDroppeds")
-                        .HasForeignKey("CuckooDroppedId");
-                });
-
-            modelBuilder.Entity("ProyectoFinal.CORE.File", b =>
-                {
-                    b.HasOne("ProyectoFinal.CORE.Malware", "Malware")
-                        .WithMany()
-                        .HasForeignKey("MalwareId");
+                        .HasForeignKey("Dropped_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.Malware", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Malwares")
+                        .HasForeignKey("User_Id");
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ScreenShot", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.Malware", "Malware")
                         .WithMany()
-                        .HasForeignKey("MalwareId");
+                        .HasForeignKey("Malware_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ThreatCrowd.TCDomains", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.ThreatCrowd.ThreatCrowdInfo", "ThreatCrowdInfo")
                         .WithMany("Domains")
-                        .HasForeignKey("ThreatCrowdInfoId");
+                        .HasForeignKey("ThreatCrowd_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ThreatCrowd.TCEmails", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.ThreatCrowd.ThreatCrowdInfo", "ThreatCrowdInfo")
                         .WithMany("Emails")
-                        .HasForeignKey("ThreatCrowdInfoId");
+                        .HasForeignKey("ThreatCrowd_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ThreatCrowd.TCHashes", b =>
@@ -1753,14 +1697,18 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.ThreatCrowd.ThreatCrowdInfo", "ThreatCrowdInfo")
                         .WithMany("Ips")
-                        .HasForeignKey("ThreatCrowdInfoId");
+                        .HasForeignKey("ThreatCrowd_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ThreatCrowd.TCReferences", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.ThreatCrowd.ThreatCrowdInfo", "ThreatCrowdInfo")
                         .WithMany("References")
-                        .HasForeignKey("ThreatCrowdInfoId");
+                        .HasForeignKey("ThreatCrowd_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ThreatCrowd.TCResolution", b =>
@@ -1774,7 +1722,9 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.ThreatCrowd.ThreatCrowdInfo", "ThreatCrowdInfo")
                         .WithMany("Scans")
-                        .HasForeignKey("ThreatCrowdInfoId");
+                        .HasForeignKey("ThreatCrowd_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.ThreatCrowd.TCSubdomanins", b =>
@@ -1788,7 +1738,9 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.Malware", "Malware")
                         .WithMany()
-                        .HasForeignKey("MalwareId");
+                        .HasForeignKey("Malware_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.VirusTotal.VirusTotalComments", b =>
@@ -1802,14 +1754,18 @@ namespace ProyectoFinal.DAL.Migrations
                 {
                     b.HasOne("ProyectoFinal.CORE.Malware", "Malware")
                         .WithMany()
-                        .HasForeignKey("MalwareId");
+                        .HasForeignKey("Malware_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProyectoFinal.CORE.VirusTotal.VirusTotalScans", b =>
                 {
                     b.HasOne("ProyectoFinal.CORE.VirusTotal.VirusTotalInfo", "VirusTotal")
                         .WithMany("Scans")
-                        .HasForeignKey("VirusTotalId");
+                        .HasForeignKey("VirusTotal_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

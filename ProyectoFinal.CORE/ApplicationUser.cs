@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProyectoFinal.CORE
 {
@@ -33,6 +34,8 @@ namespace ProyectoFinal.CORE
         ///// Instagram del usuario
         ///// </summary>
         //public string? Instagram { get; set; }
+        public virtual List<Malware> Malwares { get; set; }
+        public virtual List<Comment> Comments { get; set; }
 
     }
 }

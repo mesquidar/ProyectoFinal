@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ProyectoFinal.CORE.Comment>
+
+@{
+    ViewData["Title"] = "Mis Comentarios";
+}
+
+<h2>Mis Comentarios</h2>
+<hr />
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <!--Table-->
+            <table id="commentResults" class="table table-bordered table-hover" width="100%">
+                <!--Table head-->
+                <thead class="elegant-color white-text">
+                    <tr>
+                        <th>Malware</th>
+                        <th>Comentario</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+
+                    @foreach (var comment in Model)
+                    {
+                        <tr>
+                            <td>@comment.Malware.FileName</td>
+                            <td>@comment.TextComment</td>
+                            <td>
+                                <a href="/Analysis/Index/@comment.Malware.MD5" class="btn btn-primary btn-sm">Ver</a>
+                                @Html.ActionLink("Eliminar", "Delete", "Comment", new { area = "Admin", id = comment.Id }, new { @class = "btn btn-danger btn-sm" })
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+                <!--Table body-->
+            </table>
+            <!--Table-->
+
+        </div>
+
+    </div>
+}
+else
+{
+    <div align="center">
+        <p>No hay datos que mostrar, puede realizar comentarios en las muestras subidas</p>
+    </div>
+}
+
+<script>$(document).ready(function () {
+        $('#commentResults').DataTable();
+    });</script>

@@ -19,6 +19,9 @@ using ProyectoFinal.CORE.Contracts.Cuckoo;
 using ProyectoFinal.Application.Cuckoo;
 using ProyectoFinal.CORE.Contracts.ThreatCrowd;
 using ProyectoFinal.Application.ThreatCrowd;
+using Microsoft.Extensions.Logging;
+using log4net.Repository.Hierarchy;
+using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
 namespace ProyectoFinal.Web
 {
@@ -35,19 +38,21 @@ namespace ProyectoFinal.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            
+                options.UseLazyLoadingProxies().UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection"))
+             
+                    );
+
             //services.AddDbContextPool<ApplicationDbContext>(options => 
-                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             //services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                //.AddEntityFrameworkStores<ApplicationDbContext>()
+            //.AddEntityFrameworkStores<ApplicationDbContext>()
 
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc();
 
-
+            
             services.Configure<FormOptions>(x =>
             {
                 x.ValueLengthLimit = int.MaxValue;
@@ -63,6 +68,8 @@ namespace ProyectoFinal.Web
             services.AddScoped<ILogEvent, Log4NetManager>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IRoleManager, RoleManager>();
             services.AddScoped<IMalwareManager, MalwareManager>();
             services.AddScoped<IVirusTotalManager, VirusTotalManager>();
             services.AddScoped<IVirusTotalScanManager, VirusTotalScanManager>();
@@ -102,12 +109,14 @@ namespace ProyectoFinal.Web
             services.AddScoped<IThreatCrowdInfoManager, ThreatCrowdInfoManager>();
             services.AddScoped<ITCResolutionManager, TCResolutionManager>();
             services.AddScoped<ICommentManager, CommentManager>();
+            services.AddScoped<ICuckooStringsManager, CuckooStringsManager>();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -127,17 +136,19 @@ namespace ProyectoFinal.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.UseEndpoints(endpoints =>
             {
+
+                endpoints.MapAreaControllerRoute(
+                 name: "Admin",
+                 areaName: "Admin",
+                 pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-                endpoints.MapControllerRoute(
-                 name: "areas",
-                 pattern: "{area}/{controller}/{did?}/{action=Index}/{id?}");
-
+               
                 endpoints.MapRazorPages();
             });
         }

@@ -1,0 +1,90 @@
+﻿@model ProyectoFinal.Web.Models.AnalysisCuckooBehaviorViewModel
+
+<h2>Analisis Comportamiento</h2>
+<hr />
+
+<h5>Árbol de Procesos</h5>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <table id="processTree" class="table table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">
+                        Nombre Proceso
+                    </th>
+                    <th class="th-sm">
+                        Comando
+                    </th>
+                    <th class="th-sm">
+                        Visto
+                    </th>
+                    <th class="th-sm">
+                        Pid
+                    </th>
+                    <th class="th-sm">
+                        PPid
+                    </th>
+                    <th class="th-sm">
+                        Track
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var proces in Model.ProcessTree)
+                {
+                    <tr>
+                        <td>@proces.ProcessName</td>
+                        <td>@proces.CommandLine</td>
+                        <td>@proces.FirstSeen</td>
+                        <td>@proces.Pid</td>
+                        <td>@proces.Ppid</td>
+                        <td>@proces.Track</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5>Comportamiento</h5>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+            <table id="behaviorSummary" class="table table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th class="th-sm">
+                            Nombre
+                        </th>
+                        <th class="th-sm">
+                            String
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var beha in Model.BehaviorSummary)
+                    {
+                        <tr>
+                            <td>@beha.Name</td>
+                            <td>@beha.Strings</td>
+                        </tr>
+                    }
+                </tbody>
+                </table>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+$('#processTree').DataTable();
+$('.dataTables_length').addClass('bs-select');
+    });
+
+    $(document).ready(function () {
+        $('#behaviorSummary').DataTable();
+        $('.dataTables_length').addClass('bs-select');
+    });
+
+</script>

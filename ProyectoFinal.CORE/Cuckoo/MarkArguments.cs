@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
-        /// id de markcall asociado
-        /// </summary>
-        public int MarkCall_Id { get; set; }
-
-        /// <summary>
         /// markcall asociado
         /// </summary>
         public virtual MarkCall MarkCall { get; set; }
+
+        /// <summary>
+        /// id de markcall asociado
+        /// </summary>
+        [ForeignKey("MarkCall")]
+        public int MarkCall_Id { get; set; }
 
         /// <summary>
         /// direccion base

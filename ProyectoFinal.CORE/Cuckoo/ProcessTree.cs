@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
-        /// id de cuckoo behavior id asociado
-        /// </summary>
-        public int Behavior_Id { get; set; }
-
-        /// <summary>
         /// cuckoo behavior id asociado
         /// </summary>
         public virtual CuckooBehavior CuckooBehavior { get; set; }
+
+        /// <summary>
+        /// id de cuckoo behavior id asociado
+        /// </summary>
+        [ForeignKey("CuckooBehavior")]
+        public int Behavior_Id { get; set; }
 
         /// <summary>
         /// commando ejecutado

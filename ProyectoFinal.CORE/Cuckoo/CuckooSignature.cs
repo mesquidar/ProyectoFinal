@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
-        /// id de malware asociado
-        /// </summary>
-        public int Malware_Id { get; set; }
-
-        /// <summary>
         /// malware asociado
         /// </summary>
-        public virtual Malware Malware { get; set; }
+        [ForeignKey("CuckooScanId")]
+        public virtual CuckooInfo CuckooInfo { get; set; }
+
+        /// <summary>
+        /// id de malware asociado
+        /// </summary>       
+        public int CuckooScan_Id { get; set; }
 
         /// <summary>
         /// descripcion de signature
@@ -34,12 +36,12 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de marks
         /// </summary>
-        public List<Mark> Marks { get; set; }
+        public virtual List<Mark> Marks { get; set; }
 
         /// <summary>
         /// listado de referencias
         /// </summary>
-        public List<SignatureReferences> References { get; set; }
+        public virtual List<SignatureReferences> References { get; set; }
 
         /// <summary>
         /// nivel de severidad

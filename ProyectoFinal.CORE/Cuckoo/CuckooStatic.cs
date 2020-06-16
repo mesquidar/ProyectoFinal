@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -10,16 +11,17 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// id de cuckoo static
         /// </summary>
         public int Id { get; set; }
-        
-        /// <summary>
-        /// id del analisis de cuckoo ascoiado
-        /// </summary>
-        public int Cuckoo_Id { get; set; }
 
         /// <summary>
         /// analisis cuckoo asociado
         /// </summary>
+        [ForeignKey("CuckooScanId")]
         public virtual CuckooInfo CuckooInfo { get; set; }
+
+        /// <summary>
+        /// id del analisis de cuckoo ascoiado
+        /// </summary>
+        public int CuckooScan_Id { get; set; }
 
         /// <summary>
         /// numero de librerias importadas
@@ -29,12 +31,12 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de claves
         /// </summary>
-        public List<StaticKeys> Keys { get; set; }
+        public virtual List<StaticKeys> Keys { get; set; }
 
         /// <summary>
         /// listado de peexport
         /// </summary>
-        public List<PeExport> PeExport { get; set; }
+        public virtual List<PeExport> PeExport { get; set; }
 
         /// <summary>
         /// peimphash
@@ -44,17 +46,17 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de peimports
         /// </summary>
-        public List<PeImport> PeImports { get; set; }
+        public virtual List<PeImport> PeImports { get; set; }
 
         /// <summary>
         /// listado de peresources
         /// </summary>
-        public List<PeResource> PeResources { get; set; }
+        public virtual List<PeResource> PeResources { get; set; }
 
         /// <summary>
         /// listado de pesections
         /// </summary>
-        public List<PeSection> PeSections { get; set; }
+        public virtual List<PeSection> PeSections { get; set; }
 
         /// <summary>
         /// timestamp 
@@ -64,6 +66,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// listado de firmas
         /// </summary>
-        public List<StaticSignature> Signatures { get; set; }
+        public virtual List<StaticSignature> Signatures { get; set; }
     }
 }

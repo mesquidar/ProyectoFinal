@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
-        /// id asociado de mark
-        /// </summary>
-        public int Mark_Id { get; set; }
-
-        /// <summary>
         /// Mark asociado
         /// </summary>
         public virtual Mark Mark { get; set; }
+
+        /// <summary>
+        /// id asociado de mark
+        /// </summary>
+        [ForeignKey("Mark")]
+        public int Mark_Id { get; set; }
 
         /// <summary>
         /// nombre de api
@@ -29,7 +31,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// argumentos de mark
         /// </summary>
-        public List<MarkArguments> Arguments { get; set; }
+        public virtual List<MarkArguments> Arguments { get; set; }
 
         /// <summary>
         /// categoria de markcall

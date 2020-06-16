@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.VirusTotal
@@ -12,14 +13,15 @@ namespace ProyectoFinal.CORE.VirusTotal
         public int Id { get; set; }
 
         /// <summary>
-        /// id del analisis de virustotal asociado
-        /// </summary>
-        public int VirusTotal_Id { get; set; }
-
-        /// <summary>
         /// analisis de virustotal
         /// </summary>
         public virtual VirusTotalInfo VirusTotal { get; set; }
+
+        /// <summary>
+        /// id del analisis de virustotal asociado
+        /// </summary>
+        [ForeignKey("VirusTotal")]
+        public int VirusTotal_Id { get; set; }
 
         /// <summary>
         /// Nombre del antivirus

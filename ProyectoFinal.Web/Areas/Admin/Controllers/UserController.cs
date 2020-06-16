@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ProyectoFinal.CORE;
 using ProyectoFinal.CORE.Contracts;
 using ProyectoFinal.DAL;
@@ -21,24 +22,18 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
 {
     [Authorize(Roles = "Admin")]
     [Area("Admin")]
-    [Route("Admin/User")]
     public class UserController : Controller
     {
-        IUserManager userManager = null;
+        IUserManager usrManager = null;
         IRoleManager roleManager = null;
-        ILogEvent _log = null;
+        UserManager<ApplicationUser> _userManager = null;
+        ILogger<UserController> _log = null;
 
-        /// <summary>
-        /// Constructor del controlador de usuario
-        /// </summary>
-        /// <param name="userManager">manager de usuario</param>
-        /// <param name="profileManager">manager de perfil</param>
-        /// <param name="roleManager">manager de rol</param>
-        /// <param name="log">log</param>
-        public UserController(IUserManager userManager,IRoleManager roleManager, ILogEvent log)
+        public UserController(IUserManager usrManager, IRoleManager roleManager, ILogger<UserController> log, UserManager<ApplicationUser> userManager)
         {
-            this.userManager = userManager;
+            this.usrManager = usrManager;
             this.roleManager = roleManager;
+            _userManager = userManager;
             _log = log;
         }
 
@@ -46,11 +41,11 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
         /// Metodo que muestra la lista de usuarios
         /// </summary>
         /// <returns></returns>
-        public ActionResult Index()
+        public IActionResult Index()
         {
             try
             {
-                var result = userManager.GetAll()
+                var result = _userManager.Users
                 .Select(e => new UserList
                 {
                     Id = e.Id,
@@ -63,7 +58,7 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
                 return View();
             }
 
@@ -74,18 +69,49 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult Edit(string id)
+        public IActionResult Edit(string id)
         {
             try
             {
-                
 
-                return View();
+                //Obtenemos los roles y los pasamos a una lista
+                var rol = roleManager.GetAll().Select(e => new RolList
+                {
+                    Id = e.Id.ToString(),
+                    Name = e.Name
+                }).ToList();
+
+                var li = new List<SelectListItem>();
+
+                foreach (var item in rol)
+                {
+                    li.Add(new SelectListItem { Text = item.Name, Value = item.Id });
+                }
+
+                //obtenemos los datos del usuario por su id
+                var user = usrManager.GetByUserId(id);
+
+                var rolUser = _userManager.GetRolesAsync(user).Id;
+
+                var model = new UserEdit
+                {
+                    ItemList = li,
+                    User = new UserList
+                    {
+
+                        UserName = user.UserName,
+                        Email = user.Email,
+
+                    },
+                    Option = rolUser.ToString()
+                };
+
+                return View(model);
             }
             catch (Exception ex)
             {
-                _log.WriteError(ex.Message, ex);
-                return View();
+                _log.LogError(ex.Message, ex);
+                return RedirectToAction("Index");
             }
             
         }
@@ -97,18 +123,74 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
         /// <param name="model">modelo de useredit</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Edit(string id, UserEdit model)
+        public IActionResult Edit(string id, UserEdit model)
         {
             try
             {
-                
+
+                //obtenemos los datos de usuario y cogemos los datos del form a result
+                var result = usrManager.GetByUserId(id);
+                result.UserName = model.User.UserName;
+                result.Email = model.User.Email;
+                // si no se ha introducido una nueva contrseña no hace nada
+                if (model.User.Password != null)
+                {
+                    //creamos un nuevo hasher para encriptar la password
+                    var hasher = new PasswordHasher<ApplicationUser>();
+                    //desde el hasher mediante la password introducida creamos la password hasheada
+                    string hashedNewPassword = hasher.HashPassword(result, model.User.Password);
+                    result.PasswordHash = hashedNewPassword;
+                }
+
+                //guardamos los datos
+                usrManager.Context.SaveChanges();
+
+                //incializamos necesario
+                var rolUser = _userManager.GetRolesAsync(result).Id;
+
+                if (model.Option != null)
+                {
+                    switch (_userManager.GetRolesAsync(result).Result.FirstOrDefault())
+                    {
+                        case "Admin":
+                            //lo eliminamos del rol cliente
+                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
+                            //añadimos al usuario al rol admin
+                            _userManager.AddToRoleAsync(result, model.Option);
+
+                            break;
+                        case "Professional":
+                            //lo eliminamos del rol cliente
+                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
+                            //añadimos al usuario al rol admin
+                            _userManager.AddToRoleAsync(result, model.Option);
+                            break;
+                        case "Business":
+                            //lo eliminamos del rol cliente
+                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
+                            //añadimos al usuario al rol admin
+                            _userManager.AddToRoleAsync(result, model.Option);
+                            break;
+                        case "Registered":
+                            //lo eliminamos del rol cliente
+                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
+                            //añadimos al usuario al rol admin
+                            _userManager.AddToRoleAsync(result, model.Option);
+                            break;
+                        case "":
+                            break;
+                    }
+                }
+             
                 TempData["editado"] = "El usuario se ha editado correctamente";
+                _log.LogInformation("Usuario editado correctamente: Id " + id.ToString());
                 return RedirectToAction("Index");
+            
             }
             catch(Exception ex)
             {
-                _log.WriteError(ex.Message, ex);
-                return View();
+                _log.LogError(ex.Message, ex);
+                return View(model);
             }
         }
 
@@ -121,7 +203,7 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
         {
             try
             {
-                var user = userManager.GetByUserId(id);
+                var user = usrManager.GetByUserId(id);
                 if (user != null)
                 {
                     UserList model = new UserList
@@ -135,37 +217,38 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
             }
             catch (Exception e)
             {
-                _log.WriteError(e.Message, e);
+                _log.LogError(e.Message, e);
                 Redirect("Error");
             }
 
             return View();
         }
 
-        /// <summary>
-        /// Metodo que elimina el usuario pasado
-        /// </summary>
-        /// <param name="id">id de usaurio</param>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Metodo que elimina el usuario pasado
+        ///// </summary>
+        ///// <param name="id">id de usaurio</param>
+        ///// <param name="collection"></param>
+        ///// <returns></returns>
         [HttpPost]
-        public ActionResult Delete(string id, FormCollection collection)
+        public ActionResult Delete(string id, IFormCollection collection)
         {
             try
             {
-                var user = userManager.GetByUserId(id);
+                var user = usrManager.GetByUserId(id);
                 if (user != null)
                 {
-                    userManager.Remove(user);
-                    userManager.Context.SaveChanges();
+                    usrManager.Remove(user);
+                    usrManager.Context.SaveChanges();
                 }
                 TempData["borrado"] = "El usuario se ha borrado correctamente";
+                _log.LogInformation("Usuario eliminado correctamente: Id " + id.ToString());
                 return RedirectToAction("Index");
 
             }
             catch (Exception ex)
             {
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
                 return View();
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,14 +13,17 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
-        /// id de cuckoo dropped asociado
-        /// </summary>
-        public int Dropped_Id { get; set; }
-
-        /// <summary>
         /// cuckoo dropped asociado
         /// </summary>
         public virtual CuckooDropped CuckooDropped { get; set; }
+
+        /// <summary>
+        /// id de cuckoo dropped asociado
+        /// </summary>
+        [ForeignKey("CuckooDropped")]
+        public int Dropped_Id { get; set; }
+
+        
 
         /// <summary>
         /// calculo crc32

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -23,6 +24,7 @@ using Newtonsoft.Json.Linq;
 using ProyectoFinal.CORE.Contracts.Cuckoo;
 using System.IO.Compression;
 using ProyectoFinal.CORE.Contracts.ThreatCrowd;
+using Microsoft.Extensions.Logging;
 
 namespace ProyectoFinal.Web.Controllers
 {
@@ -41,6 +43,7 @@ namespace ProyectoFinal.Web.Controllers
         ICuckooDroppedManager droppedManager = null;
         IDroppedPidsManager droppedPidsManager = null;
         IDroppedUrlsManager droppedUrlsManager=null;
+        ICuckooStringsManager cuckooStringsManager = null;
         ICuckooStaticManager cuckooStaticManager = null;
         IPeImportsManager peImportsManager = null;
         IPeExportsManager peExportsManager = null;
@@ -68,7 +71,7 @@ namespace ProyectoFinal.Web.Controllers
         ITCResolutionManager tCResolutionManager = null;
         ITCScansManager tCScansManager = null;
         ITCSubdomainsManager tCSubdomainsManager = null;
-        ILogEvent _log = null;
+        ILogger<ScanController> _log = null;
 
         //definimos variables que se utilizaran para mostrar el progreso en el front
         public static string status;
@@ -85,7 +88,7 @@ namespace ProyectoFinal.Web.Controllers
         /// <param name="malwareManager">manager de malware</param>
         /// <param name="log">log</param>
         public ScanController(IMalwareManager malwareManager, IVirusTotalManager vtManager,IVirusTotalScanManager vtScanManager,
-            ICuckooInfoManager cuckooInfoManager, ILogEvent log, IHostingEnvironment hostingEnvironment,
+            ICuckooInfoManager cuckooInfoManager, ILogger<ScanController> log, IHostingEnvironment hostingEnvironment,
             ICuckooTargetManager cuckooTargetManager, ITargetUrlsManager targetUrlsManager, ITargetPidsManager targetPidsManager,
             ICuckooDroppedManager droppedManager,IDroppedUrlsManager droppedUrlsManager, IDroppedPidsManager droppedPidsManager,
             ICuckooStaticManager cuckooStaticManager, IPeExportsManager peExportsManager, IPeImportsManager peImportsManager,
@@ -95,7 +98,7 @@ namespace ProyectoFinal.Web.Controllers
             IMarksManager marksManager, IMarkArgumentsManager markArgumentsManager, IMarkCallManager markCallManager, IMarkSectionManager markSectionManager,
             IScreenShotManager screenShotManager, IThreatCrowdInfoManager threatCrowdInfoManager, ITCDomainsManager tCDomainsManager, ITCEmailsManager tCEmailsManager,
             ITCHashesManager tCHashesManager, ITCIpsManager tCIpsManager, ITCReferencesManager tCReferencesManager, ITCResolutionManager tCResolutionManager,
-            ITCScansManager tCScansManager, ITCSubdomainsManager tCSubdomainsManager)
+            ITCScansManager tCScansManager, ITCSubdomainsManager tCSubdomainsManager, ICuckooStringsManager cuckooStringsManager)
         {
             this.malwareManager = malwareManager;
             this.vtManager = vtManager;
@@ -134,6 +137,7 @@ namespace ProyectoFinal.Web.Controllers
             this.tCResolutionManager = tCResolutionManager;
             this.tCScansManager = tCScansManager;
             this.tCSubdomainsManager = tCSubdomainsManager;
+            this.cuckooStringsManager = cuckooStringsManager;
 
             _log = log;
             _appEnvironment = hostingEnvironment;
@@ -161,7 +165,6 @@ namespace ProyectoFinal.Web.Controllers
         {
             try
             {
-
                 //gverfificamos el archivo
                 var file = Request.Form.Files["upload"];
                 //si el archivo esta vacio devolvemos a la misma pagina con mensaje
@@ -175,10 +178,10 @@ namespace ProyectoFinal.Web.Controllers
                 //si no pasamos a siguiente 
                 else
                 {
-                    // si el tamaño del archivo excede los 120mb se deveulve el formulrio de nuevo indicando error de tamaño
-                    if (file.Length > 125829120)
+                    // si el tamaño del archivo excede los 30mb se deveulve el formulrio de nuevo indicando error de tamaño
+                    if (file.Length > 31457280)
                     {
-                        TempData["grande"] = "El archivo subido es demasiado grande";
+                        TempData["grande"] = "El archivo subido es demasiado grande, pruebe utilizando una url";
 
                         return View(model);
                     }
@@ -229,9 +232,8 @@ namespace ProyectoFinal.Web.Controllers
                         //si esta subido se dirigira al usuario al analisis de esta forma evitamos duplicar trabajos de analisis
                         else{
 
-                            //TODO
-                            TempData["exist"] = "El archivo ya existe sera redirigido en unos segundos al analisis correspondiente";
-                            return RedirectToAction("Exist");
+                            TempData["exist"] = "El archivo subido ya ha sido analizado este es su analisis correspondiente";
+                            return RedirectToAction("Index", "Analysis", new { id = result.MD5 });
                         }
 
                     }
@@ -243,7 +245,7 @@ namespace ProyectoFinal.Web.Controllers
             catch (Exception ex)
             {
                 //guardamso log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
                 return View(model);
             }
         }
@@ -302,22 +304,21 @@ namespace ProyectoFinal.Web.Controllers
                 {
                     dynamic report = await GetCuckooReport(cuckooId);
                     //lanzamos metodo que guardara el report en base de datos
-                    await SaveCuckooReport(report, malware);
+                    SaveCuckooReport(report, malware);
                 }
                 //lanzamos metodo que obtiene los screenshots realizados por cuckoo
-                await GetScreenShotsAsync(14,malware.Id);
+                await GetScreenShotsAsync(cuckooId,malware.Id);
                 //metodo que empieza el analisis de threatcrowd
                 await StartThreatCrowdAnalysisAsync(malware.Id, malware.MD5);
                 //metoso que actualiza el estado del malware
                 UpdateMalware(malware);
-                await Task.Delay(3000);
                 
-                return RedirectToAction("Index", "Malware", new { id = malware.MD5 });
+                return RedirectToAction("Index", "Analysis", new { id = malware.MD5 });
             }
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
                 return Redirect("Index");
             }
             
@@ -368,7 +369,8 @@ namespace ProyectoFinal.Web.Controllers
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
+                UpdateMalware(malware);
                 Redirect("Index");
             }
         }
@@ -393,6 +395,7 @@ namespace ProyectoFinal.Web.Controllers
                     Malware_Id = malware.Id,
                     Total = fileReport.Total,
                     Positives = fileReport.Positives,
+                    MD5 = malware.MD5
                 };
 
                 status = "Guardando Resultados...";
@@ -424,7 +427,8 @@ namespace ProyectoFinal.Web.Controllers
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
+                UpdateMalware(malware);
                 Redirect("Index");
             }
 
@@ -458,6 +462,7 @@ namespace ProyectoFinal.Web.Controllers
                 Activity.Current = null;
                 progress = 32;
                 status = "Subiendo archivo...";
+
                 //cargamos el archivo en formato MultipartFormDataContent 
                 var multipartContent = new MultipartFormDataContent();
                 multipartContent.Add(new ByteArrayContent(System.IO.File.ReadAllBytes(malware.FilePath)), "file", Path.GetFileName(malware.FilePath));
@@ -498,7 +503,8 @@ namespace ProyectoFinal.Web.Controllers
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
+                UpdateMalware(malware);
                  Redirect("Index");//guardamos el log si se produce una excepcion
                 return 0;
 
@@ -595,8 +601,8 @@ namespace ProyectoFinal.Web.Controllers
                 }
             }
 
-        public async Task SaveCuckooReport(dynamic data, Malware malware)
-        {
+        public void SaveCuckooReport(dynamic data, Malware malware)
+         {
             try
             {
                 progress = 42;
@@ -608,7 +614,8 @@ namespace ProyectoFinal.Web.Controllers
                     Malware_Id = malware.Id,
                     Category = data.info.category,
                     Package = data.info.package,
-                    Score = data.info.score
+                    Score = data.info.score,
+                    MD5 = malware.MD5
                 };
                 
                 cuckooInfoManager.Add(info);
@@ -620,7 +627,7 @@ namespace ProyectoFinal.Web.Controllers
                 //creamos un nuevo modelo de cuckoo target para guardar los datos obtenidos
                 CORE.Cuckoo.CuckooTarget target = new CORE.Cuckoo.CuckooTarget
                 {
-                    Cuckoo_Id = data.info.id,
+                    CuckooScan_Id = data.info.id,
                     crc32 = data.target.file.crc32,
                     md5 = data.target.file.md5,
                     Name = data.target.file.name,
@@ -648,6 +655,24 @@ namespace ProyectoFinal.Web.Controllers
 
                 targetUrlsManager.Context.SaveChanges();
 
+                //por cada targeturl que haya la insertamos en la tabla TargetUrls
+                if (data.target.file.pids != null)
+                {
+                    foreach (var pid in data.target.file.pids)
+                    {
+                        CORE.Cuckoo.TargetPids tPids = new CORE.Cuckoo.TargetPids
+                        {
+                            Target_Id = target.Id,
+                            Pid = pid
+                        };
+
+                        targetPidsManager.Add(tPids);
+                    };
+
+                    targetUrlsManager.Context.SaveChanges();
+                }
+               
+
 
                 //guardamos cuckoo dropped porcada archivo droppeado que haya
                 progress = 48;
@@ -656,7 +681,7 @@ namespace ProyectoFinal.Web.Controllers
                 {
                     CORE.Cuckoo.CuckooDropped dropped = new CORE.Cuckoo.CuckooDropped
                     {
-                        Cuckoo_Id = data.info.id,
+                        CuckooScan_Id = data.info.id,
                         crc32 = drop.crc32,
                         FilePath = drop.filepath,
                         md5 = drop.md5,
@@ -666,48 +691,48 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     droppedManager.Add(dropped);
-
+                    droppedManager.Context.SaveChanges();
                     //guardamos los pids del dropped
-                    progress = 50;
-                    status = "Guardando Dropped Pids...";
-                    foreach (var pid in drop.pids)
+                    if (drop.pids != null)
                     {
-                        CORE.Cuckoo.DroppedPids droppedPids = new CORE.Cuckoo.DroppedPids
+                        foreach (var pid in drop.pids)
                         {
-                            Dropped_Id = dropped.Id,
-                            Pid = pid,
-                        };
+                            CORE.Cuckoo.DroppedPids droppedPids = new CORE.Cuckoo.DroppedPids
+                            {
+                                Dropped_Id = dropped.Id,
+                                Pid = pid,
+                            };
 
-                        droppedPidsManager.Add(droppedPids);
+                            droppedPidsManager.Add(droppedPids);
+                            droppedPidsManager.Context.SaveChanges();
+                        }
                     }
 
                     //guardamos las url del dropped
-                    progress = 52;
-                    status = "Guardando Dropped Urls...";
-                    foreach (var url in drop.urls)
+                    if (drop.urls != null)
                     {
-                        CORE.Cuckoo.DroppedUrls droppedUrls = new CORE.Cuckoo.DroppedUrls
+                        
+                        foreach (var url in drop.urls)
                         {
-                            Dropped_Id = dropped.Id,
-                            Url = url,
-                        };
+                            CORE.Cuckoo.DroppedUrls droppedUrls = new CORE.Cuckoo.DroppedUrls
+                            {
+                                Dropped_Id = dropped.Id,
+                                Url = url,
+                            };
 
-                        droppedUrlsManager.Add(droppedUrls);
+                            droppedUrlsManager.Add(droppedUrls);
+                            droppedUrlsManager.Context.SaveChanges();
+                        }
                     }
-
+                                                      
                 };
                
-                droppedManager.Context.SaveChanges();
-                droppedPidsManager.Context.SaveChanges();
-                droppedUrlsManager.Context.SaveChanges();
-
-
                 //guardamos cuckoo ststic y sus derivados
                 progress = 54;
                 status = "Guardando Cuckoo Static...";
                 CORE.Cuckoo.CuckooStatic cStatic = new CORE.Cuckoo.CuckooStatic
                 {
-                    Cuckoo_Id = data.info.id,
+                    CuckooScan_Id = data.info.id,
                     ImportedDllCount = data.@static.imported_dll_count,
                     PeImphash = data.@static.pe_imphash,
                     PeTimestamp = data.@static.pe_timestamp,
@@ -715,6 +740,20 @@ namespace ProyectoFinal.Web.Controllers
 
                 cuckooStaticManager.Add(cStatic);
                 cuckooStaticManager.Context.SaveChanges();
+
+                //Añadimos cuckoo strings
+                foreach (var str in data.strings)
+                {
+                    CORE.Cuckoo.CuckooStrings cStrings = new CORE.Cuckoo.CuckooStrings
+                    {
+                        CuckooScan_Id = data.info.id,
+                        Strings = str,
+                    };
+
+                    cuckooStringsManager.Add(cStrings);
+                    cuckooStringsManager.Context.SaveChanges();
+                }
+
 
                 //POR CADA PE IMPORT AÑADIMOS UN LINEA
                 progress = 56;
@@ -729,7 +768,8 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     peImportsManager.Add(peImport);
-                    
+                    peImportsManager.Context.SaveChanges();
+
                     //dentro de cada pe import añadimos todos los imports relaciondos
                     foreach (var import in im.imports)
                     {
@@ -741,12 +781,12 @@ namespace ProyectoFinal.Web.Controllers
                         };
 
                         importsManager.Add(imp);
-
+                        importsManager.Context.SaveChanges();
                     };
 
                 }
-                peImportsManager.Context.SaveChanges();
-                importsManager.Context.SaveChanges();
+                
+                
 
                 //por cada pe export
                 progress = 58;
@@ -761,6 +801,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     peExportsManager.Add(peExport);
+                    peExportsManager.Context.SaveChanges();
 
                     // por cada pe export añadimo los exports relacionados
                     foreach (var export in exp.exports)
@@ -773,12 +814,13 @@ namespace ProyectoFinal.Web.Controllers
                         };
 
                         exportsManager.Add(exAdd);
+                        exportsManager.Context.SaveChanges();
 
                     };
 
                 }
-                peExportsManager.Context.SaveChanges();
-                exportsManager.Context.SaveChanges();
+                
+                
 
                 //añadimos los pereources
                 progress = 60;
@@ -796,9 +838,10 @@ namespace ProyectoFinal.Web.Controllers
 
                     };
                     peResourcesManager.Add(peResource);
+                    peResourcesManager.Context.SaveChanges();
                 }
 
-                peResourcesManager.Context.SaveChanges();
+                
 
 
                 //guardamos pe sections
@@ -817,9 +860,10 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     peSectionsManager.Add(peSection);
+                    peSectionsManager.Context.SaveChanges();
                 };
 
-                peSectionsManager.Context.SaveChanges();
+                
 
                 //aañdimos static signatures
                 progress = 64;
@@ -838,10 +882,11 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     staticSignaturesManager.Add(staticSignature);
+                    staticSignaturesManager.Context.SaveChanges();
 
                 };
 
-                staticSignaturesManager.Context.SaveChanges();
+                
 
                 //añadimos pe keys
                 progress = 66;
@@ -855,17 +900,21 @@ namespace ProyectoFinal.Web.Controllers
 
                     };
                     staticKeysManager.Add(key);
+                    staticKeysManager.Context.SaveChanges();
                 }
 
-                staticKeysManager.Context.SaveChanges();
+                
 
                 //añadimos cuckoo behavior
                 progress = 68;
                 status = "Guardando Cuckoo Behavior...";
                 CORE.Cuckoo.CuckooBehavior cuckooBehavior = new CORE.Cuckoo.CuckooBehavior
                 {
-                    Cuckoo_Id = data.info.id
+                    CuckooScan_Id = data.info.id
                 };
+
+                cuckooBehaviorManager.Add(cuckooBehavior);
+                cuckooBehaviorManager.Context.SaveChanges();
 
                 //AÑADIMOS LOS REGISTROS DE DIRECTORY CREATED DENTRO DE BEHAVIOR SUMMARY
                 progress = 70;
@@ -880,6 +929,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(dirCreated);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.directory_enumerated)
@@ -892,6 +942,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(dirEnum);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.dll_loaded)
@@ -904,6 +955,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(dllLoaded);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_created)
@@ -916,6 +968,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileCreated);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_deleted)
@@ -928,6 +981,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileDeleted);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_exists)
@@ -940,6 +994,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileExists);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_failed)
@@ -952,6 +1007,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileFailed);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_opened)
@@ -964,6 +1020,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileOpened);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_read)
@@ -976,6 +1033,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileRead);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.file_written)
@@ -988,6 +1046,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(fileWritten);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.guid)
@@ -1000,6 +1059,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(guid);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.regkey_opened)
@@ -1012,6 +1072,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(regKeyOpened);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
                 foreach (var directory in data.behavior.summary.regkey_read)
@@ -1024,9 +1085,10 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     BehaviorSummaryManager.Add(regKeyRead);
+                    BehaviorSummaryManager.Context.SaveChanges();
                 }
 
-                BehaviorSummaryManager.Context.SaveChanges();
+                
 
                 //añadimos los registros de process tree
                 progress = 74;
@@ -1045,10 +1107,11 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     processTreeManager.Add(processTree);
+                    processTreeManager.Context.SaveChanges();
                 }
 
-                processTreeManager.Context.SaveChanges();
-
+                
+                
                 //añadimos cuckoo siganture
                 progress = 76;
                 status = "Guardando Cuckoo Signature...";
@@ -1056,7 +1119,7 @@ namespace ProyectoFinal.Web.Controllers
                 {
                     CORE.Cuckoo.CuckooSignature cuckooSignature = new CORE.Cuckoo.CuckooSignature
                     {
-                        Malware_Id = malware.Id,
+                        CuckooScan_Id = data.info.id,
                         Description = sig.description,
                         Markcount = sig.markcount,
                         Severity = sig.severity,
@@ -1064,6 +1127,7 @@ namespace ProyectoFinal.Web.Controllers
                     };
 
                     cuckooSigantureManager.Add(cuckooSignature);
+                    cuckooSigantureManager.Context.SaveChanges();
 
                     //dentro de sig añadimos los marks relacionados
                     progress = 78;
@@ -1082,8 +1146,9 @@ namespace ProyectoFinal.Web.Controllers
                         };
 
                         marksManager.Add(markModel);
+                        marksManager.Context.SaveChanges();
 
-
+                        /*
                         // desde mark añadimos los call
                         foreach (var call in mark.call)
                         {
@@ -1096,6 +1161,7 @@ namespace ProyectoFinal.Web.Controllers
                             };
 
                             markCallManager.Add(markCall);
+                            markCallManager.Context.SaveChanges();
 
                             //DE los call añadimos los markarguments
                             foreach (var argument in call.arguments)
@@ -1119,6 +1185,7 @@ namespace ProyectoFinal.Web.Controllers
                                 };
 
                                 markArgumentsManager.Add(markArguments);
+                                markArgumentsManager.Context.SaveChanges();
                             }
                         }
 
@@ -1139,22 +1206,23 @@ namespace ProyectoFinal.Web.Controllers
                             };
 
                             markSectionManager.Add(markSection);
-                        }
+                            markSectionManager.Context.SaveChanges();
+                        }*/
 
                     }
 
                 };
 
-                cuckooSigantureManager.Context.SaveChanges();
-                marksManager.Context.SaveChanges();
-                markCallManager.Context.SaveChanges();
-                markArgumentsManager.Context.SaveChanges();
+                
+                                             
             }
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
+                ErrorMalware(malware);
                 Redirect("Index");//guardamos el log si se produce una excepcion
+
             }
 
         }
@@ -1179,27 +1247,33 @@ namespace ProyectoFinal.Web.Controllers
                 ZipFile.ExtractToDirectory(filename, uploads+id);
                 System.IO.File.Delete(filename);
 
-                var files = Directory.GetFiles(uploads + id);
+                var files = Directory.GetFiles(uploads + id,"*.jpg").Select(Path.GetFileName).ToArray(); ;
 
                 progress = 84;
                 status = "Guardando Imagenes...";
                 foreach (var img in files)
                 {
-
-                    CORE.ScreenShot screenShot = new CORE.ScreenShot
+                    if (!img.EndsWith("_small.jpg"))
                     {
-                        Malware_Id = malwareId,
-                        PathFile = img
-                    };
+                        CORE.ScreenShot screenShot = new CORE.ScreenShot
+                        {
+                            Malware_Id = malwareId,
+                            PathFile = "/Uploads/Screenshots/" + id + "/" + img
+                        };
 
-                    screenShotManager.Add(screenShot);
+                        screenShotManager.Add(screenShot);
+                        screenShotManager.Context.SaveChanges();
+                    }
                 }
-                screenShotManager.Context.SaveChanges();
+                   
+
+                    
+               
             }
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
                 Redirect("Index");//guardamos el log si se produce una excepcion
             }
         }
@@ -1212,7 +1286,6 @@ namespace ProyectoFinal.Web.Controllers
                 HttpClient client = new HttpClient();
                 client.BaseAddress = new Uri(CuckooHost);
                 client.DefaultRequestHeaders.Clear();
-
 
                 //cremos un unevo request en modo POST
                 var request = new HttpRequestMessage(new HttpMethod("GET"), "https://www.threatcrowd.org/searchApi/v2/file/report/?resource=" + md5);
@@ -1312,7 +1385,8 @@ namespace ProyectoFinal.Web.Controllers
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
+                _log.LogError(ex.Message, ex);
+                ErrorMalware(md5);
                 Redirect("Index");//guardamos el log si se produce una excepcion
             }
 
@@ -1370,8 +1444,49 @@ namespace ProyectoFinal.Web.Controllers
             catch (Exception ex)
             {
                 //guardamos el log si se produce una excepcion
-                _log.WriteError(ex.Message, ex);
-                Redirect("Index");//guardamos el log si se produce una excepcion
+                _log.LogError(ex.Message, ex);
+                Redirect("Index");
+            }
+        }
+
+        /// <summary>
+        /// Metodo que marca el malware pasado como error
+        /// </summary>
+        /// <param name="id"id de malware></param>
+        public void ErrorMalware(string id)
+        {
+            var malware = malwareManager.GetByMd5(id);
+
+            try
+            {
+                malware.MalwareLevel = Level.Sin_Detecciones;
+                malware.MalwareStatus = Status.Error;
+                malwareManager.Context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _log.LogError(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Metodo que marca el malware pasado como error
+        /// </summary>
+        /// <param name="malware">malware asociado</param>
+        public void ErrorMalware(Malware malware)
+        {
+
+            try
+            {
+                malware.MalwareLevel = Level.Sin_Detecciones;
+                malware.MalwareStatus = Status.Error;
+                malwareManager.Context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _log.LogError(ex.Message, ex);
             }
         }
 

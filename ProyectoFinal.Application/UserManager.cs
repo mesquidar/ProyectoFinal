@@ -12,12 +12,15 @@ namespace ProyectoFinal.Application
     /// </summary>
     public class UserManager : GenericManager<ApplicationUser>, IUserManager, IUserStore<ApplicationUser>
     {
+        UserManager<ApplicationUser> _userManager = null;
+
         /// <summary>
         /// Constructor de user manager
         /// </summary>
         /// <param name="context"></param>
-        public UserManager(IApplicationDbContext context) : base(context)
+        public UserManager(IApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(context)
         {
+            _userManager = userManager;
         }
 
         public Task CreateAsync(ApplicationUser user)
@@ -42,7 +45,7 @@ namespace ProyectoFinal.Application
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _userManager.Dispose();
         }
 
         public Task<ApplicationUser> FindByIdAsync(string userId)

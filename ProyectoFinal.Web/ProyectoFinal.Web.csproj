@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
@@ -16,6 +15,11 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="VirusTotalNet" Version="2.0.0" />
     <PackageReference Include="ekko-lightbox" Version="4.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.3" />
+    <PackageReference Include="NLog" Version="4.7.2" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +34,12 @@
     <Folder Include="wwwroot\Uploads\Screenshots\" />
     <Folder Include="Views\Analysis\" />
     <Folder Include="Views\Malware\" />
+    <Folder Include="Areas\Admin\Views\Malware\" />
+    <Folder Include="Areas\Admin\Views\ScreenShot\" />
+    <Folder Include="Areas\Admin\Views\Comment\" />
+    <Folder Include="Areas\Admin\Views\Log\" />
+    <Folder Include="Logs\" />
+    <Folder Include="Areas\Admin\Logs\" />
   </ItemGroup>
 
   <ItemGroup>

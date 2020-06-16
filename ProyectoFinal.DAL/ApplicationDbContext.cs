@@ -75,6 +75,11 @@ namespace ProyectoFinal.DAL
         public DbSet<CuckooTarget> CuckooTargets { get; set; }
 
         /// <summary>
+        /// Genera tabla CuckooStrings
+        /// </summary>
+        public DbSet<CuckooStrings> CuckooStrings { get; set; }
+
+        /// <summary>
         /// Genera tabla de CuckooBehaviors
         /// </summary>
         public DbSet<CuckooBehavior> CuckooBehaviors { get; set; }

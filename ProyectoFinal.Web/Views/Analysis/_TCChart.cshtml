@@ -1,0 +1,34 @@
+﻿@model ProyectoFinal.CORE.ThreatCrowd.ThreatCrowdInfo
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ProyectoFinal.CORE.ApplicationUser> SignInManager
+@inject UserManager<ProyectoFinal.CORE.ApplicationUser> UserManager
+<script src="~/js/addons/Chart.bundle.min.js"></script>
+<div class="col-md-4">
+    <div class="card">
+        <h4 class="card-header elegant-color white-text text-center py-4">Información de la amenaza</h4>
+        <div class="card-body px-lg-5 pt-0">
+            <div align="center">
+                <br />
+                @if (Model.Permalink != null)
+                {
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <p>Se encontró información relacionada con la amenaza visualizada, siga el siguiente enlace para conocer más detalles</p>
+                        <a href="" class="btn btn-info">Ver Detalles</a>
+                    }
+                    else
+                    {
+                        <span class="badge badge-pill badge-info">Para ver más detalles inicie sesión</span>
+                    }
+                }
+                else
+                {
+                    <p>No se encontró información sobre esta amenaza.</p>
+                }
+                <br />
+
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+﻿@model ProyectoFinal.Web.Models.AnalysisCuckooDroppedViewModel
+
+<h2>Rastro Archivos</h2>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        @foreach (var dropped in Model.CuckooDropped)
+        {
+
+
+            <table class="table table-bordered">
+                <tbody>
+
+                    <tr>
+                        <th scope="row">Nombre</th>
+                        <td>@dropped.Name</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Ruta</th>
+                        <td>@dropped.FilePath</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Tamaño</th>
+                        <td>@dropped.Size</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Procesos</th>
+                        @foreach (var pid in Model.DroppedPids)
+                        {
+                            <td>@pid.Pid</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th scope="row">URL</th>
+                        @foreach (var url in Model.DroppedUrls)
+                        {
+                            if (url != null)
+                            {
+                                <td>@url.Url</td>
+                            }
+                            else
+                            {
+                                <td>No hay Datos</td>
+                            }
+
+                        }
+                    </tr>
+
+                    <tr>
+                        <th scope="row">MD5</th>
+                        <td>@dropped.md5</td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">CRC32</th>
+                        <td>@dropped.crc32</td>
+                    </tr>
+
+                    @*<tr>
+            <th scope="row">Yara</th>
+            @foreach (var yara in Model.YaraDropped)
+            {
+                if (yara != null)
+                {
+                    <td>@yara.Name &nbsp;@yara.Description</td>
+                }
+                else
+                {
+                    <td>No hay Datos</td>
+                }
+
+            }
+        </tr>*@
+
+
+                </tbody>
+            </table>
+            
+        }
+    </div>
+
+</div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -12,19 +13,20 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Id { get; set; }
 
         /// <summary>
-        /// id de cuckoo siganture asociado
-        /// </summary>
-        public int Siganture_Id { get; set; }
-
-        /// <summary>
         /// cuckoo signature asociado
         /// </summary>
         public virtual CuckooSignature CuckooSignature { get; set; }
 
         /// <summary>
+        /// id de cuckoo siganture asociado
+        /// </summary>
+        [ForeignKey("CuckooSignature")]
+        public int Siganture_Id { get; set; }
+
+        /// <summary>
         /// Call de mark
         /// </summary>
-        public List<MarkCall> Call { get; set; }
+        public virtual List<MarkCall> Call { get; set; }
 
         /// <summary>
         /// cid de mark
@@ -59,6 +61,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// section de mark
         /// </summary>
-        public List<MarkSection> MarkSection { get; set; }
+        public virtual List<MarkSection> MarkSection { get; set; }
     }
 }

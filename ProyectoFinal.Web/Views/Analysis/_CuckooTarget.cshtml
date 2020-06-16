@@ -1,0 +1,64 @@
+﻿@model ProyectoFinal.Web.Models.AnalysisCuckooTargetViewModel 
+<h2>Información</h2>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">CRC32</th>
+                    <th scope="col">MD5</th>
+                    <th scope="col">Tamaño</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.CuckooTarget.Name</td>
+                    <td>@Model.CuckooTarget.crc32</td>
+                    <td>@Model.CuckooTarget.md5</td>
+                    <td>@Model.CuckooTarget.Size</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">PID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pid in Model.TargetPids)
+                {
+                    <tr>
+                        <td>@pid.Pid</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var url in Model.Targeturls)
+                {
+                    <tr>
+                        <td>@url.Url</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

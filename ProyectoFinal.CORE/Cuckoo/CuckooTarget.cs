@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.Cuckoo
@@ -11,15 +12,18 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// </summary>
         public int Id { get; set; }
 
-        /// <summary>
-        /// Id del analsis de cuckoo asociado
-        /// </summary>
-        public int Cuckoo_Id { get; set; }
 
         /// <summary>
         /// analisis de cuckoo asociado
         /// </summary>
+        [ForeignKey("CuckoScanId")]
         public virtual CuckooInfo CuckooInfo { get; set; }
+
+        /// <summary>
+        /// Id del analsis de cuckoo asociado
+        /// </summary>
+        
+        public int CuckooScan_Id { get; set; }
 
         /// <summary>
         /// calculo crc32
@@ -44,7 +48,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// lista de pids
         /// </summary>
-        public List<TargetPids> Pids { get; set; }
+        public virtual List<TargetPids> Pids { get; set; }
 
         /// <summary>
         /// ruta del archivo dentro de windows
@@ -69,7 +73,7 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// <summary>
         /// lista de urls asociada al archivo
         /// </summary>
-        public List<TargetUrls> Urls { get; set; }
+        public virtual List<TargetUrls> Urls { get; set; }
 
 
     }

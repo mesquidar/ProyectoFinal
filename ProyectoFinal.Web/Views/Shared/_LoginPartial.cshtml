@@ -19,8 +19,8 @@
                     <label>Hola @User.Identity.Name!</label>
                     <hr />
                     <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Mi Cuenta</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="/Home/MyMalware">Mis Muestras</a>
+                    <a class="dropdown-item" href="/Home/MyComments">Mis Comentarios</a>
                     <hr />
                     <form class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                         <button type="submit" class="nav-link btn btn-danger">Cerrar Sesión</button>

@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@model AnalysisThreatCrowdViewModel
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ProyectoFinal.CORE.ApplicationUser> SignInManager
 @inject UserManager<ProyectoFinal.CORE.ApplicationUser> UserManager
 
@@ -9,7 +10,7 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <h1>Prueba</h1>
+    <h1>@Model.Malware.Name</h1>
     <hr />
     <div class="row">
 
@@ -17,36 +18,68 @@
         <div class="col-md-8">
             <div class="row">
                 <b>Nombre del Analisis:&nbsp; </b>
-                sdgfdfgdfg
-            </div>
-            <div class="row">
-                <b>Nombre del Archivo:&nbsp; </b>
-                sdgfdfgdfg
+                @Model.Malware.Name
             </div>
 
+            @if (Model.Malware.Url == null)
+            {
+                <div class="row">
+                    <b>Nombre del Archivo:&nbsp; </b>
+                    @Model.Malware.FileName
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <b>URL:&nbsp; </b>
+                    @Model.Malware.Url
+                </div>
+            }
             <div class="row">
                 <b>Fecha del Analisis:&nbsp; </b>
-                sdgfdfgdfg
-            </div>
-
-            <div class="row">
-                <b>Nombre del Archivo:&nbsp; </b>
-                sdgfdfgdfg
+                @Model.Malware.Date
             </div>
             <div class="row">
                 <b>MD5:&nbsp; </b>
-                sdgfdfgdfg
+                @Model.Malware.MD5
             </div>
             <div class="row">
                 <b>SHA256:&nbsp;</b>
-                sdgfdfgdfg
+                @Model.Malware.SHA256
             </div>
         </div>
 
         <div class="col-md-2">
 
             <div class="row">
-                <h3><span class="badge badge-pill badge-danger" align="right">Malicioso</span></h3>
+                @if (Model.Malware.MalwareLevel == ProyectoFinal.CORE.Level.Indeterminado)
+                {
+                    <h3><span class="badge badge-pill badge-secondary" align="right">Indeterminado</span></h3>
+
+                }
+
+                @if (Model.Malware.MalwareLevel == ProyectoFinal.CORE.Level.Sin_Detecciones)
+                {
+                    <h3><span class="badge badge-pill badge-success" align="right">No se detectaron Amenazas</span></h3>
+
+                }
+
+                @if (Model.Malware.MalwareLevel == ProyectoFinal.CORE.Level.Sospechoso)
+                {
+                    <h3><span class="badge badge-pill badge-warning" align="right">Sospechoso</span></h3>
+
+                }
+
+                @if (Model.Malware.MalwareLevel == ProyectoFinal.CORE.Level.Malicioso)
+                {
+                    <h3><span class="badge badge-pill badge-danger" align="right">Malicioso</span></h3>
+
+                }
+
+            </div>
+
+            <div class="row">
+                <h3><span class="badge badge-pill badge-info" align="right">@Model.Malware.MalwareStatus</span></h3>
             </div>
 
             <div class="row">
@@ -67,7 +100,8 @@
     <div class="row">
         <div class="col-md-6">
             <h4>Link ThreatCrowd:&nbsp;</h4>
-            <a href="">vfdghbfdghfdghfgh</a>
+            <a href="@Model.TCInfo.Permalink">@Model.TCInfo.Permalink</a>
+
         </div>
     </div>
     <br />
@@ -79,16 +113,19 @@
                 <!--Table head-->
                 <thead class="elegant-color white-text">
                     <tr>
-                        <th>#</th>
                         <th>Resultado Escaneos</th>
                     </tr>
                 </thead>
                 <!--Table head-->
                 <!--Table body-->
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
+                    @foreach (var scan in Model.TCScans)
+                    {
+                        <tr>
+                            <td>@scan.Scan</td>
+                        </tr>
+                    }
+
                 </tbody>
                 <!--Table body-->
             </table>
@@ -103,16 +140,19 @@
                     <!--Table head-->
                     <thead class="elegant-color white-text">
                         <tr>
-                            <th>#</th>
                             <th>Resultado IPs</th>
                         </tr>
                     </thead>
                     <!--Table head-->
                     <!--Table body-->
                     <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
+                        @foreach (var ip in Model.TCIps)
+                        {
+                            <tr>
+                                <td>@ip.Ip</td>
+                            </tr>
+                        }
+
                     </tbody>
                     <!--Table body-->
                 </table>
@@ -127,16 +167,19 @@
                     <!--Table head-->
                     <thead class="elegant-color white-text">
                         <tr>
-                            <th>#</th>
                             <th>Resultado Dominios</th>
                         </tr>
                     </thead>
                     <!--Table head-->
                     <!--Table body-->
                     <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
+                        @foreach (var domain in Model.TCDomains)
+                        {
+                            <tr>
+                                <td>@domain.Domain</td>
+                            </tr>
+                        }
+
                     </tbody>
                     <!--Table body-->
                 </table>
@@ -151,22 +194,159 @@
                     <!--Table head-->
                     <thead class="elegant-color white-text">
                         <tr>
-                            <th>#</th>
-                            <th>Resultado Referencias</th>
+                            <th>Resultado SubDominios</th>
                         </tr>
                     </thead>
                     <!--Table head-->
                     <!--Table body-->
                     <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
+                        @foreach (var sub in Model.TCSubdomanins)
+                        {
+                            <tr>
+                                <td>@sub.Subdomain</td>
+                            </tr>
+                        }
+
                     </tbody>
                     <!--Table body-->
                 </table>
                 <!--Table-->
             </div>
         </div>
+
+        <div class="col-md-3">
+            <div class='table-responsive'>
+                <!--Table-->
+                <table id="tcResults" class="table table-bordered table-hover">
+                    <!--Table head-->
+                    <thead class="elegant-color white-text">
+                        <tr>
+                            <th>Resultado Emails</th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        @if (Model.TCEmails != null)
+                        {
+                            @foreach (var emails in Model.TCEmails)
+                            {
+                                <tr>
+                                    <td>@emails.Email</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table-->
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class='table-responsive'>
+                <!--Table-->
+                <table id="tcResults" class="table table-bordered table-hover">
+                    <!--Table head-->
+                    <thead class="elegant-color white-text">
+                        <tr>
+                            <th>Resultado References</th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        @if (Model.TCReferences != null)
+                        {
+                            @foreach (var reference in Model.TCReferences)
+                            {
+                                <tr>
+                                    <td>@reference.Reference</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table-->
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class='table-responsive'>
+                <!--Table-->
+                <table id="tcResults" class="table table-bordered table-hover">
+                    <!--Table head-->
+                    <thead class="elegant-color white-text">
+                        <tr>
+                            <th>Resultado Hashes</th>
+                        </tr>
+                    </thead>
+                    <!--Table head-->
+                    <!--Table body-->
+                    <tbody>
+                        @if (Model.TCHashes != null)
+                        {
+                            @foreach (var hash in Model.TCHashes)
+                            {
+                                <tr>
+                                    <td>@hash.Hash</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                    <!--Table body-->
+                </table>
+                <!--Table-->
+            </div>
+        </div>
+
+
+    <div class="col-md-6">
+        <div class='table-responsive'>
+            <!--Table-->
+            <table id="tcResults" class="table table-bordered table-hover">
+                <!--Table head-->
+                <thead class="elegant-color white-text">
+                    <tr>
+                        <th> Resolution Dominio</th>
+                    
+                    
+                        <th>Resolution Ip</th>
+                    
+                    
+                        <th>Resolution Resuelto</th>
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+                    @if (Model.TCResolutions != null)
+                    {
+                        @foreach (var resol in Model.TCResolutions)
+                        {
+                            <tr>
+                                <td>@resol.Domain</td>
+                            </tr>
+
+                            <tr>
+                                <td>@resol.Ip</td>
+                            </tr>
+
+                            <tr>
+                                <td>@resol.LastResolved</td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+                <!--Table body-->
+            </table>
+            <!--Table-->
+        </div>
+    </div>
 
     </div>
 

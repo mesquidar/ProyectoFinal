@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace ProyectoFinal.CORE.VirusTotal
@@ -12,24 +13,30 @@ namespace ProyectoFinal.CORE.VirusTotal
         public int Id { get; set; }
 
         /// <summary>
-        /// Id del malware asociado
-        /// </summary>
-        public int Malware_Id { get; set; }
-
-        /// <summary>
         /// Malware asociado
         /// </summary>
         public virtual Malware Malware { get; set; }
 
         /// <summary>
+        /// Hashs md5 del malware
+        /// </summary>
+        public string MD5 { get; set; }
+
+        /// <summary>
+        /// Id del malware asociado
+        /// </summary>
+        [ForeignKey("Malware")]
+        public int Malware_Id { get; set; }       
+
+        /// <summary>
         /// Escaneo de los distintos antivurs de virustotal
         /// </summary>
-        public List<VirusTotalScans> Scans{ get; set; }
+        public virtual List<VirusTotalScans> Scans{ get; set; }
 
         /// <summary>
         /// Lista de los comentario de virus total
         /// </summary>
-        public List<VirusTotalComments> Comments { get; set; }
+        public virtual List<VirusTotalComments> Comments { get; set; }
 
         /// <summary>
         /// Total de analisis realizados
