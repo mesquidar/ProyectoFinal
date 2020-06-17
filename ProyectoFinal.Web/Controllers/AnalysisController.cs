@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,7 @@ using ProyectoFinal.CORE.Contracts.Cuckoo;
 using ProyectoFinal.CORE.Contracts.ThreatCrowd;
 using ProyectoFinal.CORE.Contracts.VirusTotal;
 using ProyectoFinal.CORE.Cuckoo;
+using ProyectoFinal.IFR.Email;
 using ProyectoFinal.IFR.Log;
 using ProyectoFinal.Web.Models;
 
@@ -59,6 +61,7 @@ namespace ProyectoFinal.Web.Controllers
         ICuckooBehaviorManager cuckooBehaviorManager = null;
         IBehaviorSummaryManager behaviorSummaryManager = null;
         IProcessTreeManager processTreeManager = null;
+        IEmailService email = null;
 
         public static int malId;
 
@@ -85,7 +88,7 @@ namespace ProyectoFinal.Web.Controllers
             IPeSectionsManager peSectionsManager, ICuckooTargetManager cuckooTargetManager, ICuckooDroppedManager cuckooDroppedManager,
             IDroppedPidsManager droppedPidsManager, IDroppedUrlsManager droppedUrlsManager,
             ITargetPidsManager targetPidsManager, ITargetUrlsManager targetUrlsManager,ICuckooBehaviorManager cuckooBehaviorManager,
-            IBehaviorSummaryManager behaviorSummaryManager, IProcessTreeManager processTreeManager)
+            IBehaviorSummaryManager behaviorSummaryManager, IProcessTreeManager processTreeManager, IEmailService email)
         {
             this.malwareManager = malwareManager;
             this.screenShotManager = screenShotManager;
@@ -122,6 +125,7 @@ namespace ProyectoFinal.Web.Controllers
             this.cuckooBehaviorManager = cuckooBehaviorManager;
             this.behaviorSummaryManager = behaviorSummaryManager;
             this.processTreeManager = processTreeManager;
+            this.email = email;
             _userManager = userManager;
             _log = log;
         }
@@ -509,6 +513,32 @@ namespace ProyectoFinal.Web.Controllers
                 TempData["creado"] = "El comentario se ha añadido correctamente";
                 _log.LogInformation("Comentario creado correctamente: Id " + com.Id.ToString());
                 var md5 = malwareManager.GetById(malId).MD5;
+
+                //preparamos el mensaje de email
+                var from = new List<EmailAddress>();
+                from.Add(new EmailAddress
+                {
+                    Address = "proyectofinal.tie@outlook.es",
+                    Name = "PoyectoFinal"
+                });
+                var to = new List<EmailAddress>();
+                to.Add(new EmailAddress
+                {
+                    Address = User.FindFirstValue(ClaimTypes.Name),
+                    Name = User.FindFirstValue(ClaimTypes.Name),
+                });
+
+                EmailMessage message = new EmailMessage
+                {
+
+                    FromAddresses = from,
+                    ToAddresses = to,
+                    Subject = "Comentario publicado",
+                    Content = "El comentario ha sido publicado correctamente"
+                };
+                //enviamos el email
+                email.Send(message);
+
                 return RedirectToAction("Index", "Analysis",md5);
             }
             catch (Exception ex)

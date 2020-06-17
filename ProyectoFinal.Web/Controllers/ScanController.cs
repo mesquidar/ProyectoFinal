@@ -25,6 +25,8 @@ using ProyectoFinal.CORE.Contracts.Cuckoo;
 using System.IO.Compression;
 using ProyectoFinal.CORE.Contracts.ThreatCrowd;
 using Microsoft.Extensions.Logging;
+using ProyectoFinal.IFR.Email;
+using System.Collections.Generic;
 
 namespace ProyectoFinal.Web.Controllers
 {
@@ -72,6 +74,7 @@ namespace ProyectoFinal.Web.Controllers
         ITCScansManager tCScansManager = null;
         ITCSubdomainsManager tCSubdomainsManager = null;
         ILogger<ScanController> _log = null;
+        IEmailService email = null;
 
         //definimos variables que se utilizaran para mostrar el progreso en el front
         public static string status;
@@ -98,7 +101,8 @@ namespace ProyectoFinal.Web.Controllers
             IMarksManager marksManager, IMarkArgumentsManager markArgumentsManager, IMarkCallManager markCallManager, IMarkSectionManager markSectionManager,
             IScreenShotManager screenShotManager, IThreatCrowdInfoManager threatCrowdInfoManager, ITCDomainsManager tCDomainsManager, ITCEmailsManager tCEmailsManager,
             ITCHashesManager tCHashesManager, ITCIpsManager tCIpsManager, ITCReferencesManager tCReferencesManager, ITCResolutionManager tCResolutionManager,
-            ITCScansManager tCScansManager, ITCSubdomainsManager tCSubdomainsManager, ICuckooStringsManager cuckooStringsManager)
+            ITCScansManager tCScansManager, ITCSubdomainsManager tCSubdomainsManager, ICuckooStringsManager cuckooStringsManager,
+            IEmailService email)
         {
             this.malwareManager = malwareManager;
             this.vtManager = vtManager;
@@ -138,7 +142,7 @@ namespace ProyectoFinal.Web.Controllers
             this.tCScansManager = tCScansManager;
             this.tCSubdomainsManager = tCSubdomainsManager;
             this.cuckooStringsManager = cuckooStringsManager;
-
+            this.email = email;
             _log = log;
             _appEnvironment = hostingEnvironment;
         }
@@ -1404,7 +1408,8 @@ namespace ProyectoFinal.Web.Controllers
                 status = "Actualizando Registros...";
                 var cuckooInfo = cuckooInfoManager.GetByMalwareId(malware.Id);
                 var virustotal = vtManager.GetByMalwareId(malware.Id);
-
+                //desde las notas de virustotal y cuckoo haremos la media de estos
+                //los que nos dara el nivel del malware
                 if (cuckooInfo != null && virustotal != null)
                 {
 
@@ -1439,6 +1444,29 @@ namespace ProyectoFinal.Web.Controllers
                         malwareManager.Context.SaveChanges();
                     }
 
+                    //preparamos el mensaje de email
+                    var from = new List<EmailAddress>();
+                    from.Add(new EmailAddress{
+                        Address = "proyectofinal.tie@outlook.es",
+                        Name = "PoyectoFinal"
+                        });
+                    var to = new List<EmailAddress>();
+                    to.Add(new EmailAddress
+                    {
+                        Address = User.FindFirstValue(ClaimTypes.Name),
+                        Name = User.FindFirstValue(ClaimTypes.Name),
+                    });
+
+                    EmailMessage message = new EmailMessage
+                    {
+
+                        FromAddresses = from,
+                        ToAddresses = to,
+                        Subject = "Analisis terminado",
+                        Content = "El analisis ha terminado correctamente, lo tiene disponible desde Mis Muestras"                                              
+                    };
+                    //enviamos el email
+                    email.Send(message);
                 }
             }
             catch (Exception ex)

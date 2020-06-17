@@ -4,42 +4,63 @@
     ViewData["Title"] = "Contacto";
 }
 
-    <div align="center">
-        <div class="col-md-10">
-            <div class="card">
-                <h4 class="card-header elegant-color white-text text-center py-4">Contacto</h4>
-                <div class="card-body px-lg-5 pt-0">
-                    <br />
-                    @using (Html.BeginForm())
-                    {
-                        @Html.AntiForgeryToken()
-                        <div class="form-group">
-                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Nombre" } })
-                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })<br />
-                        </div>
+@if (TempData["sent"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Html.Encode(TempData["sent"])
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
 
-                        <div class="form-group">
-                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @type = "email", @placeholder = "Email" } })
-                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })<br />
-                        </div>
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @Html.Encode(TempData["error"])
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
 
-                        <div class="form-group">
-                            @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control", @placeholder="Asunto" } })
-                            @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })<br />
-                        </div>
 
-                        <div class="form-group">                       
-                            @Html.TextAreaFor(model => model.Message, new { @class = "form-control input-lg", @rows = "10", @style = "min-width: 100%", placeholder = "Mensaje..." } )
-                            @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })<br />
-                        </div>
+<div align="center">
+    <div class="col-md-10">
+        <div class="card">
+            <h4 class="card-header elegant-color white-text text-center py-4">Contacto</h4>
+            <div class="card-body px-lg-5 pt-0">
+                <br />
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Nombre" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })<br />
+                    </div>
 
-                        <div class="form-group">
-                            <input type="submit" value="Enviar" class="btn btn-success" />
-                        </div>
-                    }
+                    <div class="form-group">
+                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @type = "email", @placeholder = "Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })<br />
+                    </div>
 
-                </div>
+                    <div class="form-group">
+                        @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control", @placeholder = "Asunto" } })
+                        @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })<br />
+                    </div>
+
+                    <div class="form-group">
+                        @Html.TextAreaFor(model => model.Message, new { @class = "form-control input-lg", @rows = "10", @style = "min-width: 100%", placeholder = "Mensaje..." })
+                        @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })<br />
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Enviar" class="btn btn-success" />
+                    </div>
+                }
+
             </div>
         </div>
     </div>
+</div>
 

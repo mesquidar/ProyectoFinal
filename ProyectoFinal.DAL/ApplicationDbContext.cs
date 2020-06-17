@@ -12,6 +12,7 @@ using ProyectoFinal.CORE.VirusTotal;
 
 namespace ProyectoFinal.DAL
 {
+
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)

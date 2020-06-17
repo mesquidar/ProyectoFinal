@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProyectoFinal.CORE.Contracts;
+using ProyectoFinal.IFR.Email;
 using ProyectoFinal.Web.Models;
 
 namespace ProyectoFinal.Web.Controllers
@@ -15,12 +17,14 @@ namespace ProyectoFinal.Web.Controllers
     {
         IMalwareManager malwareManager = null;
         ICommentManager commentManager = null;
+        IEmailService email = null;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, IMalwareManager malwareManager, ICommentManager commentManager)
+        public HomeController(ILogger<HomeController> logger, IMalwareManager malwareManager, ICommentManager commentManager, IEmailService email)
         {
             this.malwareManager = malwareManager;
             this.commentManager = commentManager;
+            this.email = email;
             _logger = logger;
         }
 
@@ -43,6 +47,47 @@ namespace ProyectoFinal.Web.Controllers
         public IActionResult Contact()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Contact(ContactViewModel model)
+        {
+            try
+            {
+                //preparamos el mensaje de email
+                var from = new List<EmailAddress>();
+                from.Add(new EmailAddress
+                {
+                    Address = "proyectofinal.tie@outlook.es",
+                    Name = model.Email
+                });
+                var to = new List<EmailAddress>();
+                to.Add(new EmailAddress
+                {
+                    Address = "proyectofinal.tie@outlook.es",
+                    Name = "PoyectoFinal"
+                });
+
+                EmailMessage message = new EmailMessage
+                {
+
+                    FromAddresses = from,
+                    ToAddresses = to,
+                    Subject = model.Subject,
+                    Content = model.Message
+                };
+                //enviamos el email
+                email.Send(message);
+                TempData["sent"] = "Se ha enviado el correo correctamente";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                //guardamos el log si se produce una excepcion
+                _logger.LogError(ex.Message, ex);
+                TempData["error"] = "Error al enviar el mensaje por favor intentalo de nuevo, o contacte con su administrador";
+                return View(model);
+            }
         }
 
         public IActionResult Faq()

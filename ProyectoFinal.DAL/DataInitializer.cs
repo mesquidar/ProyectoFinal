@@ -7,7 +7,6 @@ namespace ProyectoFinal.DAL
     public class DataInitializer
     {
 
-
         public static void SeedData(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             SeedRoles(roleManager);
