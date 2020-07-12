@@ -24,11 +24,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         public int Siganture_Id { get; set; }
 
         /// <summary>
-        /// Call de mark
-        /// </summary>
-        public virtual List<MarkCall> Call { get; set; }
-
-        /// <summary>
         /// cid de mark
         /// </summary>
         public int? Cid { get; set; }
@@ -58,9 +53,5 @@ namespace ProyectoFinal.CORE.Cuckoo
         /// </summary>
         public string Ioc { get; set; }
 
-        /// <summary>
-        /// section de mark
-        /// </summary>
-        public virtual List<MarkSection> MarkSection { get; set; }
     }
 }

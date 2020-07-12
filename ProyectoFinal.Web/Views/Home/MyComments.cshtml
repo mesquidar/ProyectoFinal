@@ -32,7 +32,6 @@
                             <td>@comment.TextComment</td>
                             <td>
                                 <a href="/Analysis/Index/@comment.Malware.MD5" class="btn btn-primary btn-sm">Ver</a>
-                                @Html.ActionLink("Eliminar", "Delete", "Comment", new { area = "Admin", id = comment.Id }, new { @class = "btn btn-danger btn-sm" })
                             </td>
                         </tr>
                     }

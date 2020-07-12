@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProyectoFinal.Web</title>
+    <title>@ViewData["Title"] - ProyectoFinal</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
@@ -39,7 +39,7 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">Muestras</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Search" asp-action="Index">Buscar</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Search">Buscar</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a>
@@ -178,10 +178,10 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Scan" asp-action="Index">Análisis Malware</a>
                         </li>
                         <li>
-                            <a class="nav-link text-light" asp-area="" asp-controller="Search" asp-action="Index">Buscar</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Search">Buscar</a>
                         </li>
                         <li>
-                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Last">últimas muestras</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Malware" asp-action="Index">últimas muestras</a>
                         </li>
                     </ul>
 

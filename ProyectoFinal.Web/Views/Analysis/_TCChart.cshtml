@@ -11,7 +11,7 @@
                 <br />
                 @if (Model.Permalink != null)
                 {
-                    @if (SignInManager.IsSignedIn(User))
+                    @if (User.IsInRole("Admin") | User.IsInRole("Professional") | User.IsInRole("Business"))
                     {
                         <p>Se encontró información relacionada con la amenaza visualizada, siga el siguiente enlace para conocer más detalles</p>
                         <a href="" class="btn btn-info">Ver Detalles</a>

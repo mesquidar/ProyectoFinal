@@ -11,7 +11,6 @@ using ProyectoFinal.DAL;
 using ProyectoFinal.IFR.Email;
 using ProyectoFinal.CORE.Contracts;
 using ProyectoFinal.Application;
-using ProyectoFinal.IFR.Log;
 using Microsoft.AspNetCore.Http.Features;
 using ProyectoFinal.CORE.Contracts.VirusTotal;
 using ProyectoFinal.Application.VirusTotal;
@@ -65,7 +64,6 @@ namespace ProyectoFinal.Web
 
             //inyeccion de dependencias de controladores etc.
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
-            services.AddScoped<ILogEvent, Log4NetManager>();
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IUserManager, UserManager>();
@@ -93,10 +91,6 @@ namespace ProyectoFinal.Web
             services.AddScoped<IBehaviorSummaryManager, BehaviorSummaryManager>();
             services.AddScoped<IImportsManager, ImportsManager>();
             services.AddScoped<IExportsManager, ExportsManager>();
-            services.AddScoped<IMarkArgumentsManager, MarkArgumentsManager>();
-            services.AddScoped<IMarkCallManager, MarkCallManager>();
-            services.AddScoped<IMarksManager, MarksManager>();
-            services.AddScoped<IMarkSectionManager, MarkSectionManager>();
             services.AddScoped<IProcessTreeManager, ProcessTreeManager>();
             services.AddScoped<IScreenShotManager, ScreenShotManager>();
             services.AddScoped<ITCDomainsManager, TCDomainsManager>();

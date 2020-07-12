@@ -14,7 +14,7 @@
                 <h4>Nota Obtenida:</h4>
                 <span class="badge badge-pill badge-primary" align="right">@Model.Score</span>
                 <br />
-                @if (SignInManager.IsSignedIn(User))
+                @if (User.IsInRole("Admin") | User.IsInRole("Professional") | User.IsInRole("Business"))
                 {
                     <a href="@(Url.Action("Cuckoo", "Analysis", new { id = @Model.MD5}))" class="btn btn-info">Ver Detalles</a>
                 }

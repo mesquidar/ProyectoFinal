@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,6 @@ using ProyectoFinal.CORE.Contracts.ThreatCrowd;
 using ProyectoFinal.CORE.Contracts.VirusTotal;
 using ProyectoFinal.CORE.Cuckoo;
 using ProyectoFinal.IFR.Email;
-using ProyectoFinal.IFR.Log;
 using ProyectoFinal.Web.Models;
 
 namespace ProyectoFinal.Web.Controllers
@@ -149,6 +149,10 @@ namespace ProyectoFinal.Web.Controllers
                     malId = malware.Id;
                     if (malware != null)
                     {
+                        if (malware.MalwareStatus != CORE.Status.Finalizado)
+                        {
+                            return RedirectToAction("Status",malware);
+                        }
                         //creamos el modelo de datos de la vista
                         AnalysisIndexViewModel model = new AnalysisIndexViewModel
                         {
@@ -247,6 +251,7 @@ namespace ProyectoFinal.Web.Controllers
         /// </summary>
         /// <param name="id">md5 del malware</param>
         /// <returns>vista</returns>
+        [Authorize(Roles = "Admin,Business,Professional")]
         public IActionResult VirusTotal(string id)
         {
             try
@@ -322,6 +327,7 @@ namespace ProyectoFinal.Web.Controllers
         /// </summary>
         /// <param name="id">md5 de malware</param>
         /// <returns>vista</returns>
+        [Authorize(Roles = "Admin,Business,Professional")]
         public IActionResult ThreatCrowd(string id)
         {
             try
@@ -418,6 +424,12 @@ namespace ProyectoFinal.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Metodo que deveulve la view con la información de Cuckoo
+        /// </summary>
+        /// <param name="id">md5 malware</param>
+        /// <returns>vista</returns>
+        [Authorize(Roles = "Admin,Business,Professional")]
         public IActionResult Cuckoo(string id)
         {
             try
@@ -435,8 +447,6 @@ namespace ProyectoFinal.Web.Controllers
                     var droppeds = cuckooDropped.Select(e => e.Id).ToArray();
                     var cuckooTarget = cuckooTargetManager.GetAll().Where(e => e.CuckooScan_Id == cuckooInfo.CuckooScanId).FirstOrDefault();
                     var cuckooBehavior = cuckooBehaviorManager.GetAll().Where(e => e.CuckooScan_Id == cuckooInfo.CuckooScanId).FirstOrDefault();
-
-                   
 
                     AnalysisCuckooViewModel model = new AnalysisCuckooViewModel
                     {
@@ -470,7 +480,6 @@ namespace ProyectoFinal.Web.Controllers
                             CuckooDropped = cuckooDropped,
                             DroppedPids = droppedPidsManager.GetAll().Where(e => droppeds.Any(id => e.Dropped_Id == id)).ToList(),
                             DroppedUrls = droppedUrlsManager.GetAll().Where(e => droppeds.Any(id => e.Dropped_Id == id)).ToList(),
-                            //YaraDropped = yaraDroppedManager.GetAll().Where(e => droppeds.Any(id => e.Dropped_Id == id)).ToList(),
                         },
                         CuckooBehaviorViewModel = new AnalysisCuckooBehaviorViewModel
                         {
@@ -494,7 +503,13 @@ namespace ProyectoFinal.Web.Controllers
             
         }
 
+        /// <summary>
+        /// Metodo que se encarga de guardar el comentario introducido por el usuario
+        /// </summary>
+        /// <param name="comment"></param>
+        /// <returns></returns>
         [HttpPost]
+        [Authorize(Roles = "Admin,Business,Professional,Registered")]
         public IActionResult Comment(IFormCollection comment)
         {
             try
@@ -550,9 +565,63 @@ namespace ProyectoFinal.Web.Controllers
             
         }
 
+        /// <summary>
+        /// Metodoq ue devuelve la vista error
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Error()
         {
             return View();
+        }
+
+        /// <summary>
+        /// metodo que se encarga de descagar el malware que se le pasa
+        /// </summary>
+        /// <param name="id">md5 del malware</param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin,Business,Professional")]
+        public IActionResult DownloadMalware(string id)
+        {
+            try
+            {
+                var result = malwareManager.GetByMd5(id);
+                if (result != null)
+                {
+                    TempData["downloadSuccess"] = "La muestra se ha descargado correctamente";
+                    //return PhysicalFile(result.FilePath, "text/plain", result.FileName);
+                    var net = new System.Net.WebClient();
+                    var data = net.DownloadData(result.FilePath);
+                    var content = new System.IO.MemoryStream(data);
+                    var contentType = "APPLICATION/octet-stream";
+                    var fileName = result.FileName;
+                    return File(content, contentType, fileName);
+
+                }
+                else
+                {
+                    TempData["downloadError"] = "No se encuentra la muestra a descargar";
+                    return RedirectToAction("Index", "Analysis", new { id = id });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //guardamso log si se produce una excepcion
+                _log.LogError(ex.Message, ex);
+                return RedirectToAction("Index","Analysis", new { id = id});
+            }
+            
+        }
+
+        /// <summary>
+        /// Metodo que se devulve una vista si el analisis del malware no ha finalizado
+        /// </summary>
+        /// <param name="malware">malware</param>
+        /// <returns>vista</returns>
+        [Authorize(Roles = "Admin,Business,Professional,Registered")]
+        public IActionResult Status(Malware malware)
+        {
+            return View(malware);
         }
 
     }

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoFinal.CORE;
 using ProyectoFinal.CORE.Contracts;
-using ProyectoFinal.IFR.Log;
 using ProyectoFinal.Web.Models;
 using VirusTotalNet;
 using VirusTotalNet.Results;
@@ -30,6 +29,7 @@ using System.Collections.Generic;
 
 namespace ProyectoFinal.Web.Controllers
 {
+    [Authorize(Roles = "Admin,Business,Professional,Registered")]
     [DisableRequestSizeLimit]
     public class ScanController : Controller
     {
@@ -59,10 +59,6 @@ namespace ProyectoFinal.Web.Controllers
         IProcessTreeManager processTreeManager = null;
         IBehaviorSummaryManager BehaviorSummaryManager = null;
         ICuckooSigantureManager cuckooSigantureManager = null;
-        IMarkArgumentsManager markArgumentsManager = null;
-        IMarkCallManager markCallManager = null;
-        IMarkSectionManager markSectionManager = null;
-        IMarksManager marksManager = null;
         IScreenShotManager screenShotManager = null;
         IThreatCrowdInfoManager threatCrowdInfoManager = null;
         ITCDomainsManager tCDomainsManager = null;
@@ -98,7 +94,6 @@ namespace ProyectoFinal.Web.Controllers
             IImportsManager importsManager, IExportsManager exportsManager, IPeResourcesManager peResourcesManager, IPeSectionsManager peSectionsManager,
             IStaticKeysManager staticKeysManager, IStaticSignaturesManager staticSignaturesManager,ICuckooBehaviorManager cuckooBehaviorManager,
             IProcessTreeManager processTreeManager, IBehaviorSummaryManager BehaviorSummaryManager, ICuckooSigantureManager cuckooSigantureManager,
-            IMarksManager marksManager, IMarkArgumentsManager markArgumentsManager, IMarkCallManager markCallManager, IMarkSectionManager markSectionManager,
             IScreenShotManager screenShotManager, IThreatCrowdInfoManager threatCrowdInfoManager, ITCDomainsManager tCDomainsManager, ITCEmailsManager tCEmailsManager,
             ITCHashesManager tCHashesManager, ITCIpsManager tCIpsManager, ITCReferencesManager tCReferencesManager, ITCResolutionManager tCResolutionManager,
             ITCScansManager tCScansManager, ITCSubdomainsManager tCSubdomainsManager, ICuckooStringsManager cuckooStringsManager,
@@ -127,10 +122,6 @@ namespace ProyectoFinal.Web.Controllers
             this.processTreeManager = processTreeManager;
             this.BehaviorSummaryManager = BehaviorSummaryManager;
             this.cuckooSigantureManager = cuckooSigantureManager;
-            this.markSectionManager = markSectionManager;
-            this.marksManager = marksManager;
-            this.markArgumentsManager = markArgumentsManager;
-            this.markCallManager = markCallManager;
             this.screenShotManager = screenShotManager;
             this.threatCrowdInfoManager = threatCrowdInfoManager;
             this.tCDomainsManager = tCDomainsManager;
@@ -162,7 +153,6 @@ namespace ProyectoFinal.Web.Controllers
         /// <param name="model">modelo de datos</param>
         /// <param name="upload">archivo subido</param>
         /// <returns></returns>
-        [Authorize(Roles = "Admin,Business,Professional,Registered")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(MalwareViewModel model, IFormFile upload)
@@ -299,6 +289,7 @@ namespace ProyectoFinal.Web.Controllers
             {
                 //obtenemos el malware a analizar
                 var malware = malwareManager.GetById(id);
+
                 //lanzamos el metodo que empezara el analisis de virustotal
                 await StartVirusTotalFileAsync(malware);
                 //lanzamos el metodo que empezara el analisis de cuckoo
@@ -475,7 +466,7 @@ namespace ProyectoFinal.Web.Controllers
                 //mandamos la solictud y recibimos la resuesta
                 var response = await client.SendAsync(request);
 
-                //si la respuesta e spositiva Codigo 200
+                //si la respuesta es positiva Codigo 200
                 if (response.IsSuccessStatusCode)
                 {
                     //recogemos la respuesta
@@ -491,8 +482,9 @@ namespace ProyectoFinal.Web.Controllers
                     progress = 35;
                     status = "Esperando a que termine el análisis...";
                     await WaitStatusCuckoo(task);
-                   
-
+                    //cambiamos el estado del malware
+                    malware.MalwareStatus = Status.Analizando;
+                    malwareManager.Context.SaveChanges();
                 }
                 else
                 {
@@ -501,8 +493,6 @@ namespace ProyectoFinal.Web.Controllers
                 }
 
                 return task;
-
-
             }
             catch (Exception ex)
             {
@@ -524,8 +514,6 @@ namespace ProyectoFinal.Web.Controllers
         public async Task WaitStatusCuckoo(int id)
         {
             string status = "pending";
-
-            
 
             while (status != "reported")
             {
@@ -1125,7 +1113,6 @@ namespace ProyectoFinal.Web.Controllers
                     {
                         CuckooScan_Id = data.info.id,
                         Description = sig.description,
-                        Markcount = sig.markcount,
                         Severity = sig.severity,
 
                     };
@@ -1134,7 +1121,7 @@ namespace ProyectoFinal.Web.Controllers
                     cuckooSigantureManager.Context.SaveChanges();
 
                     //dentro de sig añadimos los marks relacionados
-                    progress = 78;
+                   /* progress = 78;
                     status = "Guardando Siganture Marks...";
                     foreach (var mark in sig.marks)
                     {
@@ -1152,68 +1139,7 @@ namespace ProyectoFinal.Web.Controllers
                         marksManager.Add(markModel);
                         marksManager.Context.SaveChanges();
 
-                        /*
-                        // desde mark añadimos los call
-                        foreach (var call in mark.call)
-                        {
-
-                            CORE.Cuckoo.MarkCall markCall = new CORE.Cuckoo.MarkCall
-                            {
-                                Mark_Id = markModel.Id,
-                                Category = call.category,
-                                Status = call.status,
-                            };
-
-                            markCallManager.Add(markCall);
-                            markCallManager.Context.SaveChanges();
-
-                            //DE los call añadimos los markarguments
-                            foreach (var argument in call.arguments)
-                            {
-                                CORE.Cuckoo.MarkArguments markArguments = new CORE.Cuckoo.MarkArguments
-                                {
-                                    MarkCall_Id = markCall.Id,
-                                    BaseAddress = argument.base_address ,
-                                    Length = argument.length,
-                                    ProcessHandle = argument.process_handle,
-                                    ProcessIdentifier = argument.process_identifier,
-                                    Protection = argument.protection,
-                                    AllocationType = argument.argument_type,
-                                    RootPath = argument.root_path,
-                                    Access = argument.access,
-                                    BaseHandle = argument.base_handle,
-                                    KeyHandle = argument.key_handle,
-                                    Options = argument.options,
-                                    Regkey = argument.regkey,
-                                    RegkeyR = argument.regkey_r
-                                };
-
-                                markArgumentsManager.Add(markArguments);
-                                markArgumentsManager.Context.SaveChanges();
-                            }
-                        }
-
-                        //añadimos marksections
-                        progress = 80;
-                        status = "Guardando Mark Sections...";
-                        foreach (var section in mark.section)
-                        {
-                            CORE.Cuckoo.MarkSection markSection = new CORE.Cuckoo.MarkSection
-                            {
-                                Mark_Id = markModel.Id,
-                                Entropy = section.entropy,
-                                Name = section.name,
-                                SizeOfData = section.size_of_data,
-                                VirtualAddress = section.virtual_address,
-                                VirtualSize = section.virtual_size,
-
-                            };
-
-                            markSectionManager.Add(markSection);
-                            markSectionManager.Context.SaveChanges();
-                        }*/
-
-                    }
+                    }*/
 
                 };
 
@@ -1473,7 +1399,8 @@ namespace ProyectoFinal.Web.Controllers
             {
                 //guardamos el log si se produce una excepcion
                 _log.LogError(ex.Message, ex);
-                Redirect("Index");
+                ErrorMalware(malware);
+                RedirectToAction("Index");
             }
         }
 

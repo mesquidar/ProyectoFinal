@@ -16,14 +16,4 @@
     <Folder Include="Email\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Log\log4net.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Log\log4net.config">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 </Project>

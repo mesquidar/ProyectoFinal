@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProyectoFinal.CORE;
 using ProyectoFinal.CORE.Contracts;
-using ProyectoFinal.IFR.Log;
 
 namespace ProyectoFinal.Web.Areas.Admin.Controllers
 {

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProyectoFinal.CORE;
 using ProyectoFinal.CORE.Contracts;
-using ProyectoFinal.IFR.Log;
 using ProyectoFinal.Web.Areas.Admin.Models;
 
 namespace ProyectoFinal.Web.Areas.Admin.Controllers

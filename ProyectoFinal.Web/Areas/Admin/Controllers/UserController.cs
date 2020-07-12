@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using ProyectoFinal.CORE;
 using ProyectoFinal.CORE.Contracts;
 using ProyectoFinal.DAL;
-using ProyectoFinal.IFR.Log;
 using ProyectoFinal.Web.Areas.Admin.Models;
 
 

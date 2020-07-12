@@ -33,10 +33,6 @@ namespace ProyectoFinal.CORE.VirusTotal
         /// </summary>
         public virtual List<VirusTotalScans> Scans{ get; set; }
 
-        /// <summary>
-        /// Lista de los comentario de virus total
-        /// </summary>
-        public virtual List<VirusTotalComments> Comments { get; set; }
 
         /// <summary>
         /// Total de analisis realizados

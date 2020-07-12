@@ -46,11 +46,6 @@ namespace ProyectoFinal.DAL
         public DbSet<VirusTotalInfo> VirusTotalInfos { get; set; }
 
         /// <summary>
-        /// Genera tabla de productos de comnetarios de virustotal
-        /// </summary>
-        public DbSet<VirusTotalComments> VirusTotalComments { get; set; }
-
-        /// <summary>
         /// Genera tabla de escaneos de virustotal
         /// </summary>
         public DbSet<VirusTotalScans> VirusTotalScans { get; set; }
@@ -114,21 +109,6 @@ namespace ProyectoFinal.DAL
         /// Genera tabla de Marks
         /// </summary>
         public DbSet<Mark> Marks { get; set; }
-
-        /// <summary>
-        /// Genera tabla MarkArguments
-        /// </summary>
-        public DbSet<MarkArguments> MarkArguments { get; set; }
-
-        /// <summary>
-        /// Genera tabla MarkCalls
-        /// </summary>
-        public DbSet<MarkCall> MarkCalls { get; set; }
-
-        /// <summary>
-        /// Genera tabla de MarkSections
-        /// </summary>
-        public DbSet<MarkSection> MarkSections { get; set; }
 
         /// <summary>
         /// Genera tabla de PeExports

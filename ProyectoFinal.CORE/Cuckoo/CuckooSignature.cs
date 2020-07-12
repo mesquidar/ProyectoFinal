@@ -29,21 +29,6 @@ namespace ProyectoFinal.CORE.Cuckoo
         public string Description { get; set; }
 
         /// <summary>
-        /// contador de mark
-        /// </summary>
-        public int Markcount { get; set; }
-
-        /// <summary>
-        /// listado de marks
-        /// </summary>
-        public virtual List<Mark> Marks { get; set; }
-
-        /// <summary>
-        /// listado de referencias
-        /// </summary>
-        public virtual List<SignatureReferences> References { get; set; }
-
-        /// <summary>
         /// nivel de severidad
         /// </summary>
         public int Severity { get; set; }

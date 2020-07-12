@@ -28,14 +28,14 @@
 
                     <tr>
                         <th scope="row">Procesos</th>
-                        @foreach (var pid in Model.DroppedPids)
+                        @foreach (var pid in dropped.Pids)
                         {
                             <td>@pid.Pid</td>
                         }
                     </tr>
                     <tr>
                         <th scope="row">URL</th>
-                        @foreach (var url in Model.DroppedUrls)
+                        @foreach (var url in dropped.Urls)
                         {
                             if (url != null)
                             {
@@ -58,23 +58,6 @@
                         <th scope="row">CRC32</th>
                         <td>@dropped.crc32</td>
                     </tr>
-
-                    @*<tr>
-            <th scope="row">Yara</th>
-            @foreach (var yara in Model.YaraDropped)
-            {
-                if (yara != null)
-                {
-                    <td>@yara.Name &nbsp;@yara.Description</td>
-                }
-                else
-                {
-                    <td>No hay Datos</td>
-                }
-
-            }
-        </tr>*@
-
 
                 </tbody>
             </table>

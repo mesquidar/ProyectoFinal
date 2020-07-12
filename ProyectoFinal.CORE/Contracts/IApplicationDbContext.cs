@@ -15,7 +15,6 @@ namespace ProyectoFinal.CORE.Contracts
         public DbSet<Malware> Malwares { get; set; }
         public DbSet<ScreenShot> ScreenShots { get; set; }
         public DbSet<VirusTotalInfo> VirusTotalInfos { get; set; }
-        public DbSet<VirusTotalComments> VirusTotalComments { get; set; }
         public DbSet<VirusTotalScans> VirusTotalScans { get; set; }
         public DbSet<ThreatCrowdInfo> ThreatCrowdInfo { get; set; }
         public DbSet<TCResolution> TCResolutions { get; set; }
@@ -28,9 +27,6 @@ namespace ProyectoFinal.CORE.Contracts
         public DbSet<Exports> Exports { get; set; }
         public DbSet<Imports> Imports { get; set; }
         public DbSet<Mark> Marks { get; set; }
-        public DbSet<MarkArguments> MarkArguments { get; set; }
-        public DbSet<MarkCall> MarkCalls { get; set; }
-        public DbSet<MarkSection> MarkSections { get; set; }
         public DbSet<PeExport> PeExports { get; set; }
         public DbSet<PeImport> PeImports { get; set; }
         public DbSet<PeResource> PeResources { get; set; }

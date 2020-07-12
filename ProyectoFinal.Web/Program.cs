@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using ProyectoFinal.CORE;
 using ProyectoFinal.DAL;
-using ProyectoFinal.IFR.Log;
 
 namespace ProyectoFinal.Web
 {
