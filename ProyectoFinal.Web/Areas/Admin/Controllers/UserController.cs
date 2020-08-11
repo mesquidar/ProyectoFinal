@@ -84,7 +84,7 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
 
                 foreach (var item in rol)
                 {
-                    li.Add(new SelectListItem { Text = item.Name, Value = item.Id });
+                    li.Add(new SelectListItem { Text = item.Name, Value = item.Name });
                 }
 
                 //obtenemos los datos del usuario por su id
@@ -141,46 +141,48 @@ namespace ProyectoFinal.Web.Areas.Admin.Controllers
                     result.PasswordHash = hashedNewPassword;
                 }
 
-                //guardamos los datos
-                usrManager.Context.SaveChanges();
+                
 
                 //incializamos necesario
                 var rolUser = _userManager.GetRolesAsync(result).Id;
+                var rolUsers = _userManager.GetRolesAsync(result);
 
                 if (model.Option != null)
                 {
                     switch (_userManager.GetRolesAsync(result).Result.FirstOrDefault())
                     {
                         case "Admin":
-                            //lo eliminamos del rol cliente
-                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
-                            //añadimos al usuario al rol admin
-                            _userManager.AddToRoleAsync(result, model.Option);
+                            //lo eliminamos del rol 
+                            _userManager.RemoveFromRoleAsync(result, "Admin").Wait();
+                            //añadimos al usuario al rol 
+                            _userManager.AddToRoleAsync(result, model.Option).Wait();
 
                             break;
                         case "Professional":
-                            //lo eliminamos del rol cliente
-                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
-                            //añadimos al usuario al rol admin
-                            _userManager.AddToRoleAsync(result, model.Option);
+                            //lo eliminamos del rol 
+                            _userManager.RemoveFromRoleAsync(result, "Professional").Wait();
+                            //añadimos al usuario al rol 
+                            _userManager.AddToRoleAsync(result, model.Option).Wait();
                             break;
                         case "Business":
-                            //lo eliminamos del rol cliente
-                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
-                            //añadimos al usuario al rol admin
-                            _userManager.AddToRoleAsync(result, model.Option);
+                            //lo eliminamos del rol 
+                            _userManager.RemoveFromRoleAsync(result, "Business").Wait();
+                            //añadimos al usuario al rol 
+                            _userManager.AddToRoleAsync(result, model.Option).Wait();
                             break;
                         case "Registered":
-                            //lo eliminamos del rol cliente
-                            _userManager.RemoveFromRoleAsync(result, roleManager.GetById(rolUser).Name.ToString());
-                            //añadimos al usuario al rol admin
-                            _userManager.AddToRoleAsync(result, model.Option);
+                            //lo eliminamos del rol 
+                            _userManager.RemoveFromRoleAsync(result, "Registered").Wait();
+                            //añadimos al usuario al rol 
+                            _userManager.AddToRoleAsync(result, model.Option).Wait();
                             break;
                         case "":
                             break;
                     }
                 }
-             
+
+                //guardamos los datos
+                usrManager.Context.SaveChanges();
                 TempData["editado"] = "El usuario se ha editado correctamente";
                 _log.LogInformation("Usuario editado correctamente: Id " + id.ToString());
                 return RedirectToAction("Index");

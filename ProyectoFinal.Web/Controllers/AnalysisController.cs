@@ -554,7 +554,7 @@ namespace ProyectoFinal.Web.Controllers
                 //enviamos el email
                 email.Send(message);
 
-                return RedirectToAction("Index", "Analysis",md5);
+                return RedirectToAction("Index", "Analysis", new { id = md5 });
             }
             catch (Exception ex)
             {
