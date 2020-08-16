@@ -328,7 +328,7 @@ namespace ProyectoFinal.Web.Controllers
             try
             {
                 // creamos una nueva instanca de virustotal pasandole la API obtenida
-                VirusTotal virusTotal = new VirusTotal("8dfa583388406b434fd2c2fb3882f20283bbc8f2c3fb9ef73be09ca4b3f8d2ab");
+                VirusTotal virusTotal = new VirusTotal("API_KEY");
 
                 progress = 5;
                 //Usamos HTTPS en vez de HTTP normal
